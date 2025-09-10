@@ -1,23 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "file_open.h"
 
- // Example usage in main function
-int main() {
-    // Read the data from file
+int main(void) {
     read_file("test_file.csv");
-
-    if (data != NULL) {
-        printf("Data loaded successfully!\n");
-
-        // Print all connections to verify
-        print_connections(data);     
-
-        // Don't forget to free the memory when done
-        free_transport_data(data);
-    } else {
-        printf("Failed to load data from file\n");
-    }
-
+   // print_connections();
+   
     return 0;
- }
+}
 
