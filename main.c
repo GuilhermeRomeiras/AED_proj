@@ -2,23 +2,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-enum {AVIAO, COMBOIO, BARCO, AUTOCARRO, n_transport_modes};
+enum {AVIAO, COMBOIO, BARCO, AUTOCARRO, invalid_transport};
 int N, L;
 
 int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
-void free_vectors(void);
 int Enum_str_to_int(const char *str);
 const char* Enum_int_to_str(int transport_enum);
-
+void free_vectors(void);
+void free_vectors_i(int i);
 
 //funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
 int read_file(const char* filename){
     //por corrigir 
-    filename = "test_file.csv";
-    FILE *file_map = fopen("test_file.csv", "r");
+    filename = "map.csv";
+    FILE *file_map = fopen("map.csv", "r");
 
     if (!file_map) {
-        perror("test_file.csv");
+        perror("map.csv");
         return 0;
     }
 
@@ -67,11 +67,23 @@ int read_file(const char* filename){
                    &last[i],
                    &period[i])==8){
 
-                    
-        automovel[i] = Enum_str_to_int(str);
-        free(str);
-        str = NULL;
-        printf("Successfully read %d connections\n", i);
+            automovel[i] = Enum_str_to_int(str);
+
+            if (automovel[i]==4){
+                &cidade_part[i] = NULL;
+                &cidade_cheg [i] = NULL;
+                &automovel[i] = NULL;
+                &cost[i] = NULL;
+                &time[i] = NULL;
+                &first[i] = NULL;
+                &last[i] = NULL;
+                &period[i] = NULL;
+                
+            }
+
+            free(str);
+            str = NULL;
+            printf("Successfully read %d connections\n", i);
         }
 
         else {
@@ -83,7 +95,7 @@ int read_file(const char* filename){
         }
     }
         fclose(file_map);
-        return 0; // sucesso
+        return 0; 
 }
 
 
@@ -91,7 +103,7 @@ int read_file(const char* filename){
 void print_arrays(int *cidade_part, int *cidade_cheg, int *automovel, 
                   int *cost, int *time, int *first, int *last, int *period, int L) {
 
-     printf("\n=== Array Data ===\n");
+    printf("\n=== Array Data ===\n");
     for (int i = 0; i < L; i++) {
         const char *mode_str = Enum_int_to_str(automovel[i]);
 
@@ -105,6 +117,7 @@ void print_arrays(int *cidade_part, int *cidade_cheg, int *automovel,
         printf("  last: %d\n", last[i]);
         printf("  period: %d\n\n", period[i]);
     }
+
 }
 
 
@@ -118,7 +131,7 @@ int Enum_str_to_int(const char *str){
     else if (strcmp(str, "autocarro") == 0) return AUTOCARRO;
     else {
         printf("Invalid transportation");
-        return 0;
+        return 4;
     }
 
 }
@@ -140,7 +153,7 @@ const char* Enum_int_to_str(int transport_enum){
 
 int main() {
 
-    read_file("test_file.csv");
+    read_file("map.csv");
     print_arrays(cidade_part, cidade_cheg, automovel, cost, time, first, last, period, L);
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
@@ -155,18 +168,26 @@ void free_vectors(void) {
 
     free(cidade_part);
         cidade_part = NULL;
+
     free(cidade_cheg); 
         cidade_cheg = NULL; 
+
     free(automovel);
        automovel = NULL; 
+
     free(cost);
         cost = NULL; 
+
     free(time);
-        time = NULL;    
+        time = NULL;   
+
     free(first);
        first = NULL;
+
     free(last);
         last = NULL; 
+
     free(period);
         period = NULL; 
+
 }
