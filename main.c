@@ -2,14 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-enum {AVIAO, COMBOIO, BARCO, AUTOCARRO, invalid_transport};
+enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 int N, L;
+
 
 int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
 int Enum_str_to_int(const char *str);
 const char* Enum_int_to_str(int transport_enum);
 void free_vectors(void);
-void free_vectors_i(int i);
+void free_tmps(void);
+
+
 
 //funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
 int read_file(const char* filename){
@@ -48,42 +51,40 @@ int read_file(const char* filename){
 
         // Libertar memoria ja alocada
         free_vectors();
-
         fclose(file_map);
-
         return 0;
     }
     
-    int i;
-    char *str = NULL;
-    for (i=0; i<L; i++){
+    int n_con = 0; // Contador de conexoes lidas com sucesso
+    for (int i=0; i<L; i++){
+        char *str = NULL;
+        int tmp_cp, tmp_cc, tmp_cost, tmp_time, tmp_first, tmp_last, tmp_p, tmp_aut;
+
         if (fscanf(file_map, "%d %d %ms %d %d %d %d %d",
-                   &cidade_part[i],
-                   &cidade_cheg[i],
+                   &tmp_cp,
+                   &tmp_cc,
                    &str,
-                   &cost[i],
-                   &time[i],
-                   &first[i],
-                   &last[i],
-                   &period[i])==8){
+                   &tmp_cost,
+                   &tmp_time,
+                   &tmp_first,
+                   &tmp_last,
+                   &tmp_p) == 8){
 
-            automovel[i] = Enum_str_to_int(str);
+            tmp_aut = Enum_str_to_int(str);
 
-            if (automovel[i]==4){
-                &cidade_part[i] = NULL;
-                &cidade_cheg [i] = NULL;
-                &automovel[i] = NULL;
-                &cost[i] = NULL;
-                &time[i] = NULL;
-                &first[i] = NULL;
-                &last[i] = NULL;
-                &period[i] = NULL;
-                
+            if (tmp_aut == 0){
+                continue;
             }
 
-            free(str);
-            str = NULL;
-            printf("Successfully read %d connections\n", i);
+            cidade_part[i] = tmp_cp;
+            cidade_cheg[i] = tmp_cc;
+            automovel[i] = tmp_aut;
+            cost[i] = tmp_cost;
+            time[i] = tmp_time;
+            first[i] = tmp_first;
+            last[i] = tmp_last;
+            period[i] = tmp_p;
+
         }
 
         else {
@@ -93,10 +94,15 @@ int read_file(const char* filename){
             fclose(file_map);
             return 0;
         }
+        n_con=i;
+        free(str);
     }
-        fclose(file_map);
-        return 0; 
+
+    printf("Successfully read %d connections\n", n_con);
+    fclose(file_map);
+    return 0; 
 }
+
 
 
 // Funcao auxiliar para imprimir os dados dos arrays
@@ -131,10 +137,11 @@ int Enum_str_to_int(const char *str){
     else if (strcmp(str, "autocarro") == 0) return AUTOCARRO;
     else {
         printf("Invalid transportation");
-        return 4;
+        return 0; // Retorna 0 para transporte invalido
     }
 
 }
+
 
 // Funcao inversa que transforma o inteiro de volta para string para dar print ou escrever no ficheiro de saida. O parametro transport_enum Ã© extraido,
 // quando necessario, do valor automovel(i) que se queira escrever fazendo transport_enum = automovel(i) e de seguida chamando esta funcao
@@ -151,6 +158,7 @@ const char* Enum_int_to_str(int transport_enum){
 }
 
 
+
 int main() {
 
     read_file("map.csv");
@@ -162,6 +170,7 @@ int main() {
     return 0;
 
 }
+
 
 
 void free_vectors(void) {
