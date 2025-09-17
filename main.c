@@ -1,108 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "task_functions.h"
+#include <header.h>
+#include <file_open.h>
+
+
 
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 int N, L;
-
-
-int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
-int Enum_str_to_int(const char *str);
-const char* Enum_int_to_str(int transport_enum);
-void free_vectors(void);
-void free_tmps(void);
-
-
-
-//funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
-int read_file(const char* filename){
-    //por corrigir 
-    filename = "map.csv";
-    FILE *file_map = fopen("map.csv", "r");
-
-    if (!file_map) {
-        perror("map.csv");
-        return 0;
-    }
-
-    printf("File opened successfully!\n");
-    
-    if (fscanf(file_map, "%d %d", &N, &L) != 2) {
-        printf("Header error\n");
-        fclose(file_map);
-        return 0;
-    }
-    
-    printf("Cities: %d, Connections: %d\n", N, L);
-    
-    // Declarar arrays para cada coluna
-    cidade_part = malloc(L * sizeof(int));     // coluna 1
-    cidade_cheg = malloc(L * sizeof(int));     // coluna 2
-    automovel = malloc(L * sizeof(int));       // coluna 3 (enum)
-    cost = malloc(L * sizeof(int));            // coluna 4
-    time = malloc(L * sizeof(int));            // coluna 5
-    first = malloc(L * sizeof(int));           // coluna 6
-    last = malloc(L * sizeof(int));            // coluna 7
-    period = malloc(L * sizeof(int));          // coluna 8
-    
-    // Verificar se todos os malloc foram bem sucedidos
-    if (!cidade_part || !cidade_cheg || !automovel || !cost || !time || !first || !last || !period) {
-        printf("Memory error\n");
-
-        // Libertar memoria ja alocada
-        free_vectors();
-        fclose(file_map);
-        return 0;
-    }
-    
-    int n_con = 0; // Contador de conexoes lidas com sucesso
-    for (int i=0; i<L; i++){
-        char *str = NULL;
-        int tmp_cp, tmp_cc, tmp_cost, tmp_time, tmp_first, tmp_last, tmp_p, tmp_aut;
-
-        if (fscanf(file_map, "%d %d %ms %d %d %d %d %d",
-                   &tmp_cp,
-                   &tmp_cc,
-                   &str,
-                   &tmp_cost,
-                   &tmp_time,
-                   &tmp_first,
-                   &tmp_last,
-                   &tmp_p) == 8){
-
-            tmp_aut = Enum_str_to_int(str);
-
-            if (tmp_aut == 0){
-                continue;
-            }
-
-            cidade_part[i] = tmp_cp;
-            cidade_cheg[i] = tmp_cc;
-            automovel[i] = tmp_aut;
-            cost[i] = tmp_cost;
-            time[i] = tmp_time;
-            first[i] = tmp_first;
-            last[i] = tmp_last;
-            period[i] = tmp_p;
-
-        }
-
-        else {
-            printf("Data format error on line %d\n", i+2);
-            free(str);
-            free_vectors();
-            fclose(file_map);
-            return 0;
-        }
-        n_con=i;
-        free(str);
-    }
-
-    printf("Successfully read %d connections\n", n_con);
-    fclose(file_map);
-    return 0; 
-}
-
 
 
 // Funcao auxiliar para imprimir os dados dos arrays
@@ -129,14 +35,14 @@ void print_arrays(int *cidade_part, int *cidade_cheg, int *automovel,
 
 
 // Funcao que transforma a string do ficheiro em inteiro para melhor manipulacao
-int Enum_str_to_int(const char *str){
-
+int Enum_str_to_int(const char *str, int num_con_err){
+    
     if (strcmp(str, "aviao") == 0) return AVIAO;
     else if (strcmp(str, "comboio") == 0) return COMBOIO;
     else if (strcmp(str, "barco") == 0) return BARCO;
     else if (strcmp(str, "autocarro") == 0) return AUTOCARRO;
     else {
-        printf("Invalid transportation");
+        printf("Invalid transportation in connection %d\n", num_con_err+1);
         return 0; // Retorna 0 para transporte invalido
     }
 
@@ -159,10 +65,21 @@ const char* Enum_int_to_str(int transport_enum){
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    read_file("map.csv");
-    print_arrays(cidade_part, cidade_cheg, automovel, cost, time, first, last, period, L);
+    char *filename_map = argv[1];
+    char *filename_quests = argv[2];
+
+    read_file_map(filename_map);  
+    read_file_quests(filename_quests);
+
+    if (argc != 3) {
+       fprintf(stderr, "argument count is wrong\n");
+       return EXIT_FAILURE;
+    }
+    
+   //print_arrays(cidade_part, cidade_cheg, automovel, cost, time, first, last, period, L);
+   
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors();

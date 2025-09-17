@@ -1,120 +1,173 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#ifndef FILE_OPERATIONS_H
+#define FILE_OPERATIONS_H
 
-enum {AVIAO, COMBOIO, BARCO, AUTOCARRO, n_transport_modes};
-
-typedef struct {
-    int cidade_part;    // departure city (origem)
-    int cidade_cheg;    // arrival city (destino)
-    int automovel;      // transport mode: aviao, comboio, barco, autocarro
-    int cost;           // cost of the connection
-    int time;           // duration time
-    int first;          // first available time
-    int last;           // last available time
-    int period;         // period
-} conn;
+#include "header.h"  // Para ter acesso às declarações
 
 
-int read_file(const char* filename){
-    char *str_enum[] = {"aviao", "comboio", "barco", "autocarro"};
-    char line[1024];
-    char buffer [10];   
-    
-    FILE *file_map = fopen("test_file.csv", "r");
+
+//funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
+int read_file_map(const char* filename){
+     
+    FILE *file_map = fopen(filename, "r");
 
     if (!file_map) {
-        perror("test_file.csv");
-        fclose(file_map);
-        return 1;
+        perror(filename);
+        return 0;
     }
+
     printf("File opened successfully!\n");
-
-
-    int N, L;
+    
     if (fscanf(file_map, "%d %d", &N, &L) != 2) {
         printf("Header error\n");
         fclose(file_map);
-        return 1;
+        return 0;
     }
-
-    conn *connections = malloc(L * sizeof(conn));
-    if (!connections) {
-        printf("Memory error\n");   
-        fclose(file_map);
-        return -1;
-    }
-
+    
     printf("Cities: %d, Connections: %d\n", N, L);
+    
+    // Declarar arrays para cada coluna
+    cidade_part = malloc(L * sizeof(int));     // coluna 1
+    cidade_cheg = malloc(L * sizeof(int));     // coluna 2
+    automovel = malloc(L * sizeof(int));       // coluna 3 (enum)
+    cost = malloc(L * sizeof(int));            // coluna 4
+    time = malloc(L * sizeof(int));            // coluna 5
+    first = malloc(L * sizeof(int));           // coluna 6
+    last = malloc(L * sizeof(int));            // coluna 7
+    period = malloc(L * sizeof(int));          // coluna 8
+    
+    // Verificar se todos os malloc foram bem sucedidos
+    if (!cidade_part || !cidade_cheg || !automovel || !cost || !time || !first || !last || !period) {
+        printf("Memory error\n");
 
-        int i=0;
-        while (fscanf(file_map, "%d %d %s %d %d %d %d %d",
-                   &connections[i].cidade_part,
-                   &connections[i].cidade_cheg,
-                   buffer,
-                   &connections[i].cost,
-                   &connections[i].time,
-                   &connections[i].first,
-                   &connections[i].last,
-                   &connections[i].period) == 8) {
+        // Libertar memoria ja alocada
+        free_vectors();
+        fclose(file_map);
+        return 0;
+    }
+    
+    int n_con = 0; // Contador de conexoes lidas com sucesso
+    for (int i=0; i<L; i++){
+        char *str = NULL;
+        int tmp_cp, tmp_cc, tmp_cost, tmp_time, tmp_first, tmp_last, tmp_p, tmp_aut;
 
+        if (fscanf(file_map, "%d %d %ms %d %d %d %d %d",
+                   &tmp_cp,
+                   &tmp_cc,
+                   &str,
+                   &tmp_cost,
+                   &tmp_time,
+                   &tmp_first,
+                   &tmp_last,
+                   &tmp_p) == 8){
+                    
+            tmp_aut = Enum_str_to_int(str, i);
 
-                if (strcmp(buffer,"aviao") == 0){ 
-                    connections[i].automovel = AVIAO;
-                }
-
-                else if (strcmp(buffer,"comboio") == 0){ 
-                    connections[i].automovel = COMBOIO;
-                }
-
-                else if (strcmp(buffer,"barco") == 0){ 
-                    connections[i].automovel = BARCO;
-                }
-
-                else if (strcmp(buffer,"autocarro") == 0){ 
-                    connections[i].automovel = AUTOCARRO;
-                 }
-
-
-                 printf("Connection %d:\n", i+1);
-            printf("  cidade_part: %d\n", connections[i].cidade_part);
-            printf("  cidade_cheg: %d\n", connections[i].cidade_cheg);
-            printf("  automovel: %s\n", buffer);
-            printf("  cost: %d\n", connections[i].cost);
-            printf("  time: %d\n", connections[i].time);
-            printf("  first: %d\n", connections[i].first);
-            printf("  last: %d\n", connections[i].last);
-            printf("  period: %d\n\n", connections[i].period);
-            
-
-            i++;
-
+            if (tmp_aut == 0){
+                continue;
             }
-    free(connections);
 
+            cidade_part[i] = tmp_cp;
+            cidade_cheg[i] = tmp_cc;
+            automovel[i] = tmp_aut;
+            cost[i] = tmp_cost;
+            time[i] = tmp_time;
+            first[i] = tmp_first;
+            last[i] = tmp_last;
+            period[i] = tmp_p;
+        }
+
+        else {
+            printf("Data format error on line %d\n", i+2);
+            free(str);
+            free_vectors();
+            fclose(file_map);
+            return 0;
+        }
+        n_con++;
+        free(str);
+    }
+
+    printf("Successfully read %d connections\n", n_con);
     fclose(file_map);
-    return 0;
+    return 0; 
+
 }
 
-/*void print_connections(conn* connections, int L){
-            
-    int j=0;
-            while (j < L)
-            {
-                   
-            printf("Connection %d:\n", j+1);
-            printf("  cidade_part: %d\n", connections[j].cidade_part);
-            printf("  cidade_cheg: %d\n", connections[j].cidade_cheg);
-            printf("  automovel: %d\n", connections[j].automovel);
-            printf("  cost: %d\n", connections[j].cost);
-            printf("  time: %d\n", connections[j].time);
-            printf("  first: %d\n", connections[j].first);
-            printf("  last: %d\n", connections[j].last);
-            printf("  period: %d\n\n", connections[j].period);
-            j++;
-        
+
+
+int read_file_quests(const char* filename){ 
+    
+    FILE *file_map = fopen(filename, "r");
+
+    if (!file_map) {
+        perror(filename);
+        return 0;
+    }
+
+     char **task = malloc(5 * sizeof(char*));
+
+    cidade1 = malloc(L * sizeof(int));
+    cidade2 = malloc(L * sizeof(int));
+    tempo_inicial = malloc(L * sizeof(int));
+
+    for (int i=0; i<L; i++){
+        if (fscanf(file_map, "%ms %i %i %i", buffer, tmp1, tmp2, tmp_ini) = 4){
+            task[i] = buffer;
+            cidade1[i] = tmp1;
+            cidade2[i] = tmp2;
+            tempo_inicial[i] = tmp_ini;
+
+            printf("Task 4 selected\n");
+            task4_func();
+        }
+    
+        else if (fscanf(file_map, "%ms %i %i %i", buffer, cidade1, cidade2) = 3){
+
+            if (buffer == "Task1"){
+                task[i] = buffer;
+                cidade1[i] = tmp1;
+                cidade2[i] = tmp2;
+
+                printf("Task 1 selected\n");
+                task1_func();
+            }
+
+            else if (buffer == "Task2"){
+                task[i] = buffer;
+                cidade1[i] = tmp1;
+                cidade2[i] = tmp2;
+
+                printf("Task 2 selected\n");
+                task2_func();
+            }
+
+            else if (buffer == "Task3"){
+                task[i] = buffer;
+                cidade1[i] = tmp1;
+                cidade2[i] = tmp2;
+
+                printf("Task 3 selected\n");
+                task3_func();
+            }
+
+            else if (buffer == "Task5"){
+                task[i] = buffer;
+                cidade1[i] = tmp1;
+                cidade2[i] = tmp2;
+
+                printf("Task 5 selected\n");
+                task5_func();
+            }
         }
     }
-*/
+    printf("argument received: %s\n", buffer);
+    printf("File opened successfully!\n");
+
+    free(buffer);
+    fclose(file_map);
+    return 0;
+    
+}
 
 
+#endif
