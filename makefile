@@ -11,7 +11,7 @@ OBJ := ${SRC:%.c=build/%.o}
 
 INC :=
 
-OUT := tourIST
+OUT := tourists
 
 build/%.o: %.c $(INC) | build
 	$(CC) -o $@ -c $< $(CFLAGS)

@@ -1,27 +1,26 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "task_functions.h"
 
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 int N, L;
 
 
 int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
-int Enum_str_to_int(const char *str);
+int Enum_str_to_int(const char *str, int num_con_err);
 const char* Enum_int_to_str(int transport_enum);
 void free_vectors(void);
 void free_tmps(void);
 
 
-
 //funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
-int read_file(const char* filename){
-    //por corrigir 
-    filename = "map.csv";
-    FILE *file_map = fopen("map.csv", "r");
+int read_file_map(const char* filename){
+     
+    FILE *file_map = fopen(filename, "r");
 
     if (!file_map) {
-        perror("map.csv");
+        perror(filename);
         return 0;
     }
 
@@ -70,10 +69,12 @@ int read_file(const char* filename){
                    &tmp_last,
                    &tmp_p) == 8){
 
-            tmp_aut = Enum_str_to_int(str);
+            tmp_aut = Enum_str_to_int(str, i);
 
             if (tmp_aut == 0){
+                
                 continue;
+
             }
 
             cidade_part[i] = tmp_cp;
@@ -94,13 +95,63 @@ int read_file(const char* filename){
             fclose(file_map);
             return 0;
         }
-        n_con=i;
+        n_con++;
         free(str);
     }
 
     printf("Successfully read %d connections\n", n_con);
     fclose(file_map);
     return 0; 
+
+}
+
+
+int read_file_quests(const char* filename){ 
+    
+    FILE *file_map = fopen(filename, "r");
+    char *buffer;
+
+    if (!file_map) {
+        perror(filename);
+        return 0;
+    }
+
+    fscanf(file_map, "%ms %i %i", buffer);
+    if (buffer == "Task1"){
+        task1_func();
+        printf("Task 1 selected\n");
+    }
+
+    else if (buffer == "Task2"){
+        task2_func();
+        printf("Task 2 selected\n");
+    }
+
+    else if (buffer == "Task3"){
+        task3_func();
+        printf("Task 3 selected\n");
+    }
+
+    else if (buffer == "Task4"){
+        task4_func();
+        printf("Task 4 selected\n");
+    }
+
+    else if (buffer == "Task5"){
+        task5_func();
+        printf("Task 5 selected\n");
+    }
+
+    else {
+        printf("Invalid task\n");
+    }
+
+    printf("argument received: %s\n", buffer);
+    printf("File opened successfully!\n");
+
+    free(buffer);
+    fclose(file_map);
+    return 0;
 }
 
 
@@ -129,14 +180,14 @@ void print_arrays(int *cidade_part, int *cidade_cheg, int *automovel,
 
 
 // Funcao que transforma a string do ficheiro em inteiro para melhor manipulacao
-int Enum_str_to_int(const char *str){
-
+int Enum_str_to_int(const char *str, int num_con_err){
+    
     if (strcmp(str, "aviao") == 0) return AVIAO;
     else if (strcmp(str, "comboio") == 0) return COMBOIO;
     else if (strcmp(str, "barco") == 0) return BARCO;
     else if (strcmp(str, "autocarro") == 0) return AUTOCARRO;
     else {
-        printf("Invalid transportation");
+        printf("Invalid transportation in connection %d\n", num_con_err+1);
         return 0; // Retorna 0 para transporte invalido
     }
 
@@ -159,10 +210,21 @@ const char* Enum_int_to_str(int transport_enum){
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    read_file("map.csv");
-    print_arrays(cidade_part, cidade_cheg, automovel, cost, time, first, last, period, L);
+    char *filename_map = argv[1];
+    char *filename_quests = argv[2];
+
+    read_file_map(filename_map);  
+    read_file_quests(filename_quests);
+
+    if (argc != 3) {
+       fprintf(stderr, "argument count is wrong\n");
+       return EXIT_FAILURE;
+    }
+    
+   //print_arrays(cidade_part, cidade_cheg, automovel, cost, time, first, last, period, L);
+   
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors();
