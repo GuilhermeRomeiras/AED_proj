@@ -1,22 +1,23 @@
-#ifndef FILE_OPERATIONS_H
-#define FILE_OPERATIONS_H
+#ifndef FILE_OPEN_H
+#define FILE_OPEN_H
 
 #include "header.h"  // Para ter acesso às declarações
 
 
-
 //funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
-int read_file_map(const char* filename){
+int read_file_map(const char* filename_map){
      
-    FILE *file_map = fopen(filename, "r");
+    // pointer para o ficheiro a ser aberto
+    FILE *file_map = fopen(filename_map, "r");
 
     if (!file_map) {
-        perror(filename);
-        return 0;
+        perror(filename_map);
+        return EXIT 0;
     }
 
     printf("File opened successfully!\n");
     
+    // 1o fscanf para extrair o cabecalho
     if (fscanf(file_map, "%d %d", &N, &L) != 2) {
         printf("Header error\n");
         fclose(file_map);
@@ -26,14 +27,14 @@ int read_file_map(const char* filename){
     printf("Cities: %d, Connections: %d\n", N, L);
     
     // Declarar arrays para cada coluna
-    cidade_part = malloc(L * sizeof(int));     // coluna 1
-    cidade_cheg = malloc(L * sizeof(int));     // coluna 2
-    automovel = malloc(L * sizeof(int));       // coluna 3 (enum)
-    cost = malloc(L * sizeof(int));            // coluna 4
-    time = malloc(L * sizeof(int));            // coluna 5
-    first = malloc(L * sizeof(int));           // coluna 6
-    last = malloc(L * sizeof(int));            // coluna 7
-    period = malloc(L * sizeof(int));          // coluna 8
+    int *cidade_part = malloc(L * sizeof(int));     // coluna 1
+    int *cidade_cheg = malloc(L * sizeof(int));     // coluna 2
+    int *automovel = malloc(L * sizeof(int));       // coluna 3 (enum)
+    int *cost = malloc(L * sizeof(int));            // coluna 4
+    int *time = malloc(L * sizeof(int));            // coluna 5
+    int *first = malloc(L * sizeof(int));           // coluna 6
+    int *last = malloc(L * sizeof(int));            // coluna 7
+    int *period = malloc(L * sizeof(int));          // coluna 8
     
     // Verificar se todos os malloc foram bem sucedidos
     if (!cidade_part || !cidade_cheg || !automovel || !cost || !time || !first || !last || !period) {
@@ -42,7 +43,7 @@ int read_file_map(const char* filename){
         // Libertar memoria ja alocada
         free_vectors();
         fclose(file_map);
-        return 0;
+        return EXIT 0;
     }
     
     int n_con = 0; // Contador de conexoes lidas com sucesso
@@ -87,7 +88,7 @@ int read_file_map(const char* filename){
         free(str);
     }
 
-    printf("Successfully read %d connections\n", n_con);
+    printf("Successfully read %d right connections from %d total!\n", n_con, L);
     fclose(file_map);
     return 0; 
 
@@ -95,24 +96,32 @@ int read_file_map(const char* filename){
 
 
 
-int read_file_quests(const char* filename){ 
-    
-    FILE *file_map = fopen(filename, "r");
+// Funcao que abre e analisa o ficheiro .quests
+int read_file_quests(const char* filename_quests){ 
 
-    if (!file_map) {
-        perror(filename);
+    // cast da funcao que abre o ficheiro e conta o nº de tasks
+    int T = contar_tasks(filename_quests);
+   
+    int *task = malloc(T * sizeof(int));
+    int *cidade1 = malloc(T * sizeof(int));
+    int *cidade2 = malloc(T * sizeof(int));
+    int *tempo_inicial = malloc(T * sizeof(int));
+
+    FILE *file_quests = fopen(filename_quests, "r");
+    if (!file_quests) {
+        perror(filename_quests);
         return 0;
     }
+    printf("File opened successfully again!\n");
 
-     char **task = malloc(5 * sizeof(char*));
+    // loop for que le o ficheiro linha a linha incrementando i até T
+    for (int i=0; i<T; i++){
+        char *buffer = NULL;
+        int tmp1, tmp2, tmp_ini;
 
-    cidade1 = malloc(L * sizeof(int));
-    cidade2 = malloc(L * sizeof(int));
-    tempo_inicial = malloc(L * sizeof(int));
-
-    for (int i=0; i<L; i++){
-        if (fscanf(file_map, "%ms %i %i %i", buffer, tmp1, tmp2, tmp_ini) = 4){
-            task[i] = buffer;
+        // se ler 1 string e 3 inteiros sabemos que é task4, armazenamos e damos cast da funcao que a resolve
+        if (fscanf(file_quests, "%s %i %i %i", buffer, tmp1, tmp2, tmp_ini) == 4){
+            task[i] = 4;
             cidade1[i] = tmp1;
             cidade2[i] = tmp2;
             tempo_inicial[i] = tmp_ini;
@@ -121,10 +130,12 @@ int read_file_quests(const char* filename){
             task4_func();
         }
     
-        else if (fscanf(file_map, "%ms %i %i %i", buffer, cidade1, cidade2) = 3){
+        // se ler 1 string e 2 inteiros, verificamos qual das tasks é, armazenamos e damos cast da sua funcao que a resolve
+        else if (fscanf(file_quests, "%s %i %i %i", buffer, cidade1, cidade2) == 3){
 
-            if (buffer == "Task1"){
-                task[i] = buffer;
+            // task1
+            if (strcmp(buffer, "Task1") == 0){
+                task[i] = 1;
                 cidade1[i] = tmp1;
                 cidade2[i] = tmp2;
 
@@ -132,8 +143,9 @@ int read_file_quests(const char* filename){
                 task1_func();
             }
 
-            else if (buffer == "Task2"){
-                task[i] = buffer;
+            // task2
+            else if (strcmp(buffer, "Task2") == 0){
+                task[i] = 2;
                 cidade1[i] = tmp1;
                 cidade2[i] = tmp2;
 
@@ -141,8 +153,9 @@ int read_file_quests(const char* filename){
                 task2_func();
             }
 
-            else if (buffer == "Task3"){
-                task[i] = buffer;
+            // task3
+            else if (strcmp(buffer, "Task3") == 0){
+                task[i] = 3;
                 cidade1[i] = tmp1;
                 cidade2[i] = tmp2;
 
@@ -150,8 +163,9 @@ int read_file_quests(const char* filename){
                 task3_func();
             }
 
-            else if (buffer == "Task5"){
-                task[i] = buffer;
+            // task5
+            else if (strcmp(buffer, "Task5") == 0){
+                task[i] = 5;
                 cidade1[i] = tmp1;
                 cidade2[i] = tmp2;
 
@@ -159,14 +173,42 @@ int read_file_quests(const char* filename){
                 task5_func();
             }
         }
+        free(buffer)
     }
-    printf("argument received: %s\n", buffer);
-    printf("File opened successfully!\n");
 
-    free(buffer);
-    fclose(file_map);
+    fclose(file_quests);
     return 0;
     
+}
+
+
+
+int contar_tasks(const char* filename_quests) {
+
+    FILE *file_quests = fopen(filename_quests, "r");
+    if (!file_quests) {
+        perror(filename_quests);
+        return 0;
+    }
+    printf("File opened successfully!\n");
+    
+    int num_tasks = 0;
+    char token[5];
+    
+    // Lê token por token até ao fim do ficheiro
+    while (fscanf(filename, "%s", token) == 1) {
+
+        // Se o token começa com "Task", conta uma nova task
+        if (strncmp(token, "Task", 4) == 0) {
+            num_tasks++;
+        }
+    }
+
+    fclose(file_quests)
+
+    printf("File contains %d tasks"\n, num_tasks);
+    return num_tasks;
+
 }
 
 
