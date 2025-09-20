@@ -98,59 +98,34 @@ int read_file_map(const char* filename_map){
 
 
 // Funcao que abre e analisa o ficheiro .quests
-int read_file_quests(const char* filename_quests){ 
+int read_file_quests(FILE* file_quests, int T){     
 
-    // cast da funcao que abre o ficheiro e conta o nº de tasks
-    int T = contar_tasks(filename_quests);
-   
-    task = malloc(T * sizeof(int));
-    cidade1 = malloc(T * sizeof(int));
-    cidade2 = malloc(T * sizeof(int));
-    tempo_inicial = malloc(T * sizeof(int));
-    result = malloc(T * sizeof(int));
-
-    FILE *file_quests = fopen(filename_quests, "r");
-    if (!file_quests) {
-        perror(filename_quests);
-        exit(0);
-    }
-    printf("File opened successfully again!\n");
-
-    char *buffer;
+    char buffer[6]; // buffer para ler o nome da task
+    
     // loop for que le o ficheiro linha a linha incrementando i até T
     for (int i=0; i<T; i++){
-        int tmp1=0, tmp2=0, tmp_ini=0;
-
         // se ler 1 string e 3 inteiros sabemos que é task4, armazenamos e damos cast da funcao que a resolve
-        if (fscanf(file_quests, "%s %i %i %i", buffer, &tmp1, &tmp2, &tmp_ini) == 4){
+    
+        fscanf(file_quests, "%s ", buffer);
+        if (strcmp(buffer, "Task4") == 0){
+            fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i])==3;
             task[i] = 4;
-            cidade1[i] = tmp1;
-            cidade2[i] = tmp2;
-            tempo_inicial[i] = tmp_ini;
-
             printf("Task 4\n");
             //task4_func(i);
         }
-    
-        // se ler 1 string e 2 inteiros, verificamos qual das tasks é, armazenamos e damos cast da sua funcao que a resolve
-        else if (fscanf(file_quests, "%s %i %i", buffer, &tmp1, &tmp2) == 3){
+        else {
+            fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) == 2;
 
-            // task1
-            if (strcmp(buffer, "Task1") == 0){
+            if (strcmp(buffer, "Task1") == 0)
+            {            
                 task[i] = 1;
-                cidade1[i] = tmp1;
-                cidade2[i] = tmp2;
 
                 task1_func(i);
                 printf("Task 1 selected\n");
-                
-            }
-
+            }  
             // task2
             else if (strcmp(buffer, "Task2") == 0){
                 task[i] = 2;
-                cidade1[i] = tmp1;
-                cidade2[i] = tmp2;
 
                 printf("Task 2 selected\n");
               //  task2_func(i);
@@ -159,8 +134,6 @@ int read_file_quests(const char* filename_quests){
             // task3
             else if (strcmp(buffer, "Task3") == 0){
                 task[i] = 3;
-                cidade1[i] = tmp1;
-                cidade2[i] = tmp2;
 
                 printf("Task 3 selected\n");
               // task3_func(i);
@@ -169,20 +142,16 @@ int read_file_quests(const char* filename_quests){
             // task5
             else if (strcmp(buffer, "Task5") == 0){
                 task[i] = 5;
-                cidade1[i] = tmp1;
-                cidade2[i] = tmp2;
 
                 printf("Task 5 selected\n");
                // task5_func(i);
             }
-        }
-        else if (fscanf(file_quests, "%s", buffer)) {
-            strncmp(buffer, "Task", 4) != 0;
+            else {
             printf("Data format error on line %d\n", i+1);
             continue;
         }
+        }
     }
-    free(buffer);
     fclose(file_quests);
     return 0;
 

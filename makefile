@@ -1,4 +1,4 @@
-cFLAGS := --std=c99 -Wall -Wextra -Wpedantic
+CFLAGS := --std=c99 -Wall -Wextra -Wpedantic
 
 ifdef DEBUG
 	CFLAGS += -g
@@ -9,7 +9,7 @@ endif
 SRC := main.c
 OBJ := ${SRC:%.c=build/%.o}
 
-INC :=
+INC := task_functions.c aux_functions.c file_open.c header.h
 
 OUT := tourists
 

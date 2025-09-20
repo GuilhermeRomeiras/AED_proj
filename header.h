@@ -8,11 +8,13 @@
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 int N, L;
 int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
-int *task, *cidade1, *cidade2, *tempo_inicial;
+int *task, *cidade1, *cidade2, *tempo_inicial, *result;
 
-int read_file_map(const char* filename_maps);
-int read_file_quests(const char* filename_quests);
+int read_file_map(const char* filename_map);
+int read_file_quests(FILE* file_quests, int T);
 int contar_tasks(const char* filename_quests);
+
+void task1_func(int con_atual);
 
 void print_arrays(void);
 
