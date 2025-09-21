@@ -6,10 +6,10 @@ else
 	CFLAGS += -O3
 endif
 
-SRC := main.c
+SRC := main.c task_functions.c aux_functions.c file_open.c file_results.c
 OBJ := ${SRC:%.c=build/%.o}
 
-INC := task_functions.c aux_functions.c file_open.c header.h
+INC := header.h
 
 OUT := tourists
 

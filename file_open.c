@@ -2,8 +2,12 @@
 #ifndef FILE_OPEN_H
 #define FILE_OPEN_H
 
-#include "header.h"  // Para ter acesso às declarações
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
+#include "header.h"  // Para ter acesso às declarações
+#include "global.h"
 
 //funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
 int read_file_map(const char* filename_map){
@@ -31,14 +35,14 @@ int read_file_map(const char* filename_map){
     cidade_part = malloc(L * sizeof(int));     // coluna 1
     cidade_cheg = malloc(L * sizeof(int));     // coluna 2
     automovel = malloc(L * sizeof(int));       // coluna 3 (enum)
-    cost = malloc(L * sizeof(int));            // coluna 4
     time = malloc(L * sizeof(int));            // coluna 5
+    cost = malloc(L * sizeof(int));            // coluna 4
     first = malloc(L * sizeof(int));           // coluna 6
     last = malloc(L * sizeof(int));            // coluna 7
     period = malloc(L * sizeof(int));          // coluna 8
     
     // Verificar se todos os malloc foram bem sucedidos
-    if (!cidade_part || !cidade_cheg || !automovel || !cost || !time || !first || !last || !period) {
+    if (!cidade_part || !cidade_cheg || !automovel || !time || !cost || !first || !last || !period) {
         printf("Memory error\n");
 
         // Libertar memoria ja alocada
@@ -50,14 +54,14 @@ int read_file_map(const char* filename_map){
     int n_con = 0; // Contador de conexoes lidas com sucesso
     for (int i=0; i<L; i++){
         char *str = NULL;
-        int tmp_cp, tmp_cc, tmp_cost, tmp_time, tmp_first, tmp_last, tmp_p, tmp_aut;
+        int tmp_cp, tmp_cc, tmp_time, tmp_cost, tmp_first, tmp_last, tmp_p, tmp_aut;
 
         if (fscanf(file_map, "%d %d %ms %d %d %d %d %d",
                    &tmp_cp,
                    &tmp_cc,
                    &str,
-                   &tmp_cost,
                    &tmp_time,
+                   &tmp_cost,
                    &tmp_first,
                    &tmp_last,
                    &tmp_p) == 8){
@@ -71,8 +75,8 @@ int read_file_map(const char* filename_map){
             cidade_part[i] = tmp_cp;
             cidade_cheg[i] = tmp_cc;
             automovel[i] = tmp_aut;
-            cost[i] = tmp_cost;
             time[i] = tmp_time;
+            cost[i] = tmp_cost;
             first[i] = tmp_first;
             last[i] = tmp_last;
             period[i] = tmp_p;
@@ -98,7 +102,13 @@ int read_file_map(const char* filename_map){
 
 
 // Funcao que abre e analisa o ficheiro .quests
-int read_file_quests(FILE* file_quests, int T){     
+int read_file_quests(char * filename_quests, int T){     
+    FILE *file_quests = fopen(filename_quests, "r");
+    if (!file_quests) {
+        perror(filename_quests);
+        exit(0);
+    }
+    printf("File opened successfully again!\n");
 
     char buffer[6]; // buffer para ler o nome da task
     
@@ -108,7 +118,7 @@ int read_file_quests(FILE* file_quests, int T){
     
         fscanf(file_quests, "%s ", buffer);
         if (strcmp(buffer, "Task4") == 0){
-            fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i])==3;
+            (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i])==3);
             task[i] = 4;
             printf("Task 4\n");
             //task4_func(i);
@@ -127,16 +137,16 @@ int read_file_quests(FILE* file_quests, int T){
             else if (strcmp(buffer, "Task2") == 0){
                 task[i] = 2;
 
-                printf("Task 2 selected\n");
-              //  task2_func(i);
+               // printf("Task 2 selected\n");
+                task2_func(i);
             }
 
             // task3
             else if (strcmp(buffer, "Task3") == 0){
                 task[i] = 3;
 
-                printf("Task 3 selected\n");
-              // task3_func(i);
+              //  printf("Task 3 selected\n");
+                task3_func(i);
             }
 
             // task5
@@ -180,8 +190,9 @@ int contar_tasks(const char* filename_quests) {
         }
     }
 
-    fclose(file_quests);
     free(token);
+    token = NULL;
+    fclose(file_quests);
     printf("File contains %d tasks\n", num_tasks);
     return num_tasks;
 

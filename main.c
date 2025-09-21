@@ -3,9 +3,12 @@
 #include <stdlib.h>
 
 #include "header.h"
-#include "file_open.c"
-#include "aux_functions.c"
-#include "task_functions.c"
+//#include "file_results.c"  // Currently not used
+
+int N, L;
+int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
+int *task, *cidade1, *cidade2, *tempo_inicial, *result;
+
 
 
 int main(int argc, char *argv[]) {
@@ -25,18 +28,15 @@ int main(int argc, char *argv[]) {
     cidade1 = malloc(T * sizeof(int));
     cidade2 = malloc(T * sizeof(int));
     tempo_inicial = malloc(T * sizeof(int));
-    result = malloc(T * sizeof(int));
-
-    FILE *file_quests = fopen(filename_quests, "r");
-    if (!file_quests) {
-        perror(filename_quests);
-        exit(0);
-    }
-    printf("File opened successfully again!\n");
+    result = calloc(T, sizeof(int));
+    
 
     read_file_map(filename_map);  
-    read_file_quests(file_quests, T);
+    read_file_quests(filename_quests, T);
     //print_arrays();
+
+    for (int i=0; i<T; i++)
+    printf("%i\n", result[i]);
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map();

@@ -1,7 +1,12 @@
 #ifndef AUX_FUNCTIONS_H
 #define AUX_FUNCTIONS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "header.h"
+#include "global.h"
 
 // Funcao auxiliar para imprimir os dados dos arrays
 void print_arrays(void) {
@@ -14,8 +19,8 @@ void print_arrays(void) {
         printf("  cidade_part: %d\n", cidade_part[i]);
         printf("  cidade_cheg: %d\n", cidade_cheg[i]);
         printf("  automovel: %s (%d)\n", mode_str, automovel[i]);
-        printf("  cost: %d\n", cost[i]);
         printf("  time: %d\n", time[i]);
+        printf("  cost: %d\n", cost[i]);
         printf("  first: %d\n", first[i]);
         printf("  last: %d\n", last[i]);
         printf("  period: %d\n\n", period[i]);
@@ -67,12 +72,12 @@ void free_vectors_map(void) {
 
     free(automovel);
        automovel = NULL; 
-
-    free(cost);
-        cost = NULL; 
-
+       
     free(time);
         time = NULL;   
+
+    free(cost);
+        cost = NULL;
 
     free(first);
        first = NULL;
