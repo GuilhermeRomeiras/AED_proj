@@ -10,7 +10,7 @@
 #include "global.h"
 
 
-void results_file(char * filename_quests){
+void results_file(char * filename_quests, int T){
 
 const char* dot_pos = strrchr(filename_quests, '.');
 
@@ -20,22 +20,24 @@ if (dot_pos == NULL) {
     exit(0);
 }
 
-printf("\n ok %s \n", dot_pos);
-printf("\n %s \n", filename_quests);
+//printf("\n ok %s \n %s /n", dot_pos, filename_quests);
 
 size_t prefix_length = dot_pos - filename_quests;
-
-printf("\n kfklfa %ld \n", prefix_length);
 
 // Criar nome do ficheiro .results
 char* results_filename = malloc(prefix_length + 10);
 
-// Verificar se malloc funcionou
+
 if (results_filename == NULL) {
     printf("Erro: sem memória\n");
+    free(results_filename);
     exit(0);
 }
+printf("%s", results_filename);
 
+printf("\n kfklfa %zu \n", prefix_length);
+
+strncpy(results_filename, filename_quests, prefix_length);
 results_filename[prefix_length] = '\0';
 strcat(results_filename, ".results");
 
@@ -50,14 +52,15 @@ if (!ptr_results_file) {
         exit(0);
     }
 
-for (int i = 0; result != NULL; i++){
-
-        fprintf(ptr_results_file ,"%i ", result[i]);
+for (int i = 0; i < T; i++){
+        
+        fprintf(ptr_results_file,"%i \n", result[i]);
 }
    
 // close file
 fclose(ptr_results_file);
 free(results_filename);
+results_filename = NULL;
 }
 
 

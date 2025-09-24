@@ -84,7 +84,6 @@ int read_file_map(const char* filename_map){
 
         else {
             printf("Data format error on line %d\n", i+2);
-            free_vectors_map();
             fclose(file_map);
             return 0;
         }
@@ -118,10 +117,10 @@ int read_file_quests(char * filename_quests, int T){
 
         if (strcmp(buffer, "Task4") == 0){
             (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i]) == 3);
-            printf ("%s", buffer);
+            //printf ("%s", buffer);
 
             task[i] = 4;
-            printf("Task 4\n");
+           // printf("Task 4\n");
             task4_func(i, tempo_inicial[i]);
         }
         else if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) == 2){

@@ -96,7 +96,7 @@ void task4_func(int con_atual, int hora_inicial){
         }
     }
 
-    printf("There best time is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
+   // printf("There best time is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
 
 }
 //task5 implementação

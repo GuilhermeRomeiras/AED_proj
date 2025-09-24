@@ -16,7 +16,7 @@ void print_arrays(void);
 int Enum_str_to_int(const char *str, int num_con_err);
 const char* Enum_int_to_str(int transport_enum);
 
-void results_file(char * filename_quests);
+void results_file(char * filename_quests, int T);
 
 void free_vectors_map(void);
 void free_vectors_quests(void);

@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 
     if (argc != 3) {
        fprintf(stderr, "argument count is wrong\n");
-       exit(0);
+        exit(0);
     }
     
     char *filename_map = argv[1];
@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
     cidade2 = malloc(T * sizeof(int));
     tempo_inicial = malloc(T * sizeof(int));
     result = calloc(T, sizeof(int));
-    
 
     read_file_map(filename_map);  
     read_file_quests(filename_quests, T);
@@ -37,7 +36,7 @@ int main(int argc, char *argv[]) {
     for (int i=0; i<T; i++)
     printf("%i\n", result[i]);
 
-    results_file(filename_quests);
+    results_file(filename_quests, T);
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map();
