@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
 #include "header.h"
-//#include "file_results.c"  // Currently not used
+
 
 int N, L;
-int *cidade_part, *cidade_cheg, *automovel, *cost, *time, *first, *last, *period;
+int *cidade_part, *cidade_cheg, *automovel, *time, *cost, *first, *last, *period;
 int *task, *cidade1, *cidade2, *tempo_inicial, *result;
 
 
@@ -37,6 +36,8 @@ int main(int argc, char *argv[]) {
 
     for (int i=0; i<T; i++)
     printf("%i\n", result[i]);
+
+    results_file(filename_quests);
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map();

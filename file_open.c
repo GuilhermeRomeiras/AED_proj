@@ -53,13 +53,13 @@ int read_file_map(const char* filename_map){
     
     int n_con = 0; // Contador de conexoes lidas com sucesso
     for (int i=0; i<L; i++){
-        char *str = NULL;
+        char str[10];
         int tmp_cp, tmp_cc, tmp_time, tmp_cost, tmp_first, tmp_last, tmp_p, tmp_aut;
 
-        if (fscanf(file_map, "%d %d %ms %d %d %d %d %d",
+        if (fscanf(file_map, "%d %d %10s %d %d %d %d %d",
                    &tmp_cp,
                    &tmp_cc,
-                   &str,
+                   str,
                    &tmp_time,
                    &tmp_cost,
                    &tmp_first,
@@ -84,13 +84,11 @@ int read_file_map(const char* filename_map){
 
         else {
             printf("Data format error on line %d\n", i+2);
-            free(str);
             free_vectors_map();
             fclose(file_map);
             return 0;
         }
         n_con++;
-        free(str);
     }
 
     printf("Successfully read %d right connections from %d total!\n", n_con, L);
@@ -108,7 +106,7 @@ int read_file_quests(char * filename_quests, int T){
         perror(filename_quests);
         exit(0);
     }
-    printf("File opened successfully again!\n");
+    printf("File opened successfully again!\n\n");
 
     char buffer[6]; // buffer para ler o nome da task
     
@@ -116,15 +114,17 @@ int read_file_quests(char * filename_quests, int T){
     for (int i=0; i<T; i++){
         // se ler 1 string e 3 inteiros sabemos que é task4, armazenamos e damos cast da funcao que a resolve
     
-        fscanf(file_quests, "%s ", buffer);
+        fscanf(file_quests, "%6s ", buffer);
+
         if (strcmp(buffer, "Task4") == 0){
-            (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i])==3);
+            (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i]) == 3);
+            printf ("%s", buffer);
+
             task[i] = 4;
             printf("Task 4\n");
-            //task4_func(i);
+            task4_func(i, tempo_inicial[i]);
         }
-        else {
-            fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) == 2;
+        else if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) == 2){
 
             if (strcmp(buffer, "Task1") == 0)
             {            
@@ -138,7 +138,7 @@ int read_file_quests(char * filename_quests, int T){
                 task[i] = 2;
 
                // printf("Task 2 selected\n");
-                task2_func(i);
+                task2e3_func(i, time);
             }
 
             // task3
@@ -146,7 +146,7 @@ int read_file_quests(char * filename_quests, int T){
                 task[i] = 3;
 
               //  printf("Task 3 selected\n");
-                task3_func(i);
+                task2e3_func(i, cost);
             }
 
             // task5
@@ -160,7 +160,9 @@ int read_file_quests(char * filename_quests, int T){
             printf("Data format error on line %d\n", i+1);
             continue;
         }
+            
         }
+        
     }
     fclose(file_quests);
     return 0;
@@ -179,10 +181,10 @@ int contar_tasks(const char* filename_quests) {
     printf("File opened successfully!\n");
     
     int num_tasks = 0;
-    char *token;
+    char token[5];
     
     // Lê token por token até ao fim do ficheiro
-    while (fscanf(file_quests, "%ms", &token) == 1) {
+    while (fscanf(file_quests, "%5s", token) == 1) {
 
         // Se o token começa com "Task", conta uma nova task
         if (strncmp(token, "Task", 4) == 0) {
@@ -190,8 +192,6 @@ int contar_tasks(const char* filename_quests) {
         }
     }
 
-    free(token);
-    token = NULL;
     fclose(file_quests);
     printf("File contains %d tasks\n", num_tasks);
     return num_tasks;

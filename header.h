@@ -8,16 +8,20 @@ int read_file_quests(char* filename_quests, int T);
 int contar_tasks(const char* filename_quests);
 
 void task1_func(int con_atual);
-void task2_func(int con_atual);
-void task3_func(int con_atual);
-// void task4_func(int con_atual);
+void task2e3_func(int con_atual, int *compare);
+void task4_func(int con_atual, int hora_inicial);
 
 void print_arrays(void);
 
 int Enum_str_to_int(const char *str, int num_con_err);
 const char* Enum_int_to_str(int transport_enum);
+
+void results_file(char * filename_quests);
+
 void free_vectors_map(void);
 void free_vectors_quests(void);
 
 #endif
+
+
 
