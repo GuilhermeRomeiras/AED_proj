@@ -12,7 +12,7 @@ int *task, *cidade1, *cidade2, *tempo_inicial, *result;
 int main(int argc, char *argv[]) {
 
     if (argc != 3) {
-       fprintf(stderr, "argument count is wrong\n");
+       //fprintf(stderr, "argument count is wrong\n");
         exit(0);
     }
     
@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
     read_file_quests(filename_quests, T);
     //print_arrays();
 
-    for (int i=0; i<T; i++)
-    printf("%i\n", result[i]);
+    /*for (int i=0; i<T; i++)
+    printf("%i\n", result[i]);*/
 
     results_file(filename_quests, T);
 

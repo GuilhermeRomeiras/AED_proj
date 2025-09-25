@@ -38,7 +38,7 @@ int Enum_str_to_int(const char *str, int num_con_err){
     else if (strcmp(str, "barco") == 0) return BARCO;
     else if (strcmp(str, "autocarro") == 0) return AUTOCARRO;
     else {
-        printf("Invalid transportation in connection %d\n", num_con_err+1);
+        //printf("Invalid transportation in connection %d\n", num_con_err+1);
         return 0; // Retorna 0 para transporte invalido
     }
 

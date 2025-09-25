@@ -1,4 +1,5 @@
-CFLAGS := --std=c99 -Wall -Wextra -Wpedantic
+#CFLAGS := --std=c99 -Wall -Wextra -Wpedantic
+CFLAGS := -Wall -std=c99
 
 ifdef DEBUG
 	CFLAGS += -g

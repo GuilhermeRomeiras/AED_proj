@@ -16,7 +16,7 @@ const char* dot_pos = strrchr(filename_quests, '.');
 
 // Verificar se encontrou o '.'
 if (dot_pos == NULL) {
-    printf("Erro: ficheiro sem extensão\n");
+    //printf("Erro: ficheiro sem extensão\n");
     exit(0);
 }
 
@@ -29,7 +29,7 @@ char* results_filename = malloc(prefix_length + 10);
 
 
 if (results_filename == NULL) {
-    printf("Erro: sem memória\n");
+   // printf("Erro: sem memória\n");
     free(results_filename);
     exit(0);
 }
