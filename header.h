@@ -10,6 +10,7 @@ int contar_tasks(const char* filename_quests);
 void task1_func(int con_atual);
 void task2e3_func(int con_atual, int *compare);
 void task4_func(int con_atual, int hora_inicial);
+void task5_func(int con_atual);
 
 void print_arrays(void);
 

@@ -66,7 +66,6 @@ void task2e3_func(int con_atual, int * compare){
 void task4_func(int con_atual, int hora_inicial){
     int first_time = 0;
     int found_con = 0;
-    result[con_atual] = -2;
     int first_period = 0;
 
     for (int i = 0; i<L; i++) {  
@@ -95,12 +94,59 @@ void task4_func(int con_atual, int hora_inicial){
             result[con_atual] = -1;
         }
     }
-
+    result[con_atual] = -2;
    // printf("There best time is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
 
 }
+
+
 //task5 implementação
-    
+void task5_func(int con_atual) {
+
+    int city_a = cidade1[con_atual];
+    int city_b = cidade2[con_atual];
+
+    // Verificar se é um problema admissível
+    if (city_a < 1 || city_b < 1 || city_a > N || city_b > N) {
+        result[con_atual] = -1;
+        return;
+    }
+
+    // Verificar se NÃO existe ligação direta (pré-requisito da task5)
+    for (int i = 0; i < L; i++) {
+        if ((cidade_part[i] == city_a && cidade_cheg[i] == city_b) ||
+            (cidade_part[i] == city_b && cidade_cheg[i] == city_a)) {
+            result[con_atual] = -1;
+            return;
+        }
+    }   
+
+    // Procurar cidade intermediária
+    for (int i = 0; i < L; i++) {
+        int cidade_intermed = -1;
+        
+        // Ver se esta ligação conecta com city_a
+        if (cidade_part[i] == city_a) {
+            cidade_intermed = cidade_cheg[i];
+        } 
+        else if (cidade_cheg[i] == city_a) {
+            cidade_intermed = cidade_part[i];
+        }
+        
+        // Se encontrou intermediária, ver se ela conecta com city_b
+        if (cidade_intermed != -1) {
+            for (int j = 0; j < L; j++) {
+                if ((cidade_part[j] == cidade_intermed && cidade_cheg[j] == city_b) ||
+                    (cidade_cheg[j] == cidade_intermed && cidade_part[j] == city_b)) {
+                    result[con_atual] = 1;  // Encontrou caminho
+                    return;
+                }
+            }
+        }
+    }
+    result[con_atual] = 0;  // Não encontrou caminho
+
+}
     
 
 

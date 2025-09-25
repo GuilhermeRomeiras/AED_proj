@@ -33,9 +33,6 @@ if (results_filename == NULL) {
     free(results_filename);
     exit(0);
 }
-printf("%s", results_filename);
-
-printf("\n kfklfa %zu \n", prefix_length);
 
 strncpy(results_filename, filename_quests, prefix_length);
 results_filename[prefix_length] = '\0';

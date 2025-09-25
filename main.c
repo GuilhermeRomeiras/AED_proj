@@ -9,7 +9,6 @@ int *cidade_part, *cidade_cheg, *automovel, *time, *cost, *first, *last, *period
 int *task, *cidade1, *cidade2, *tempo_inicial, *result;
 
 
-
 int main(int argc, char *argv[]) {
 
     if (argc != 3) {

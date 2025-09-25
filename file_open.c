@@ -153,7 +153,7 @@ int read_file_quests(char * filename_quests, int T){
                 task[i] = 5;
 
                 printf("Task 5 selected\n");
-               // task5_func(i);
+                task5_func(i);
             }
             else {
             printf("Data format error on line %d\n", i+1);

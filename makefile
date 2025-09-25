@@ -25,4 +25,4 @@ build:
 	mkdir -p $@
 
 clean:
-	rm -rf build/
+	rm -rf build/ $(OUT)
