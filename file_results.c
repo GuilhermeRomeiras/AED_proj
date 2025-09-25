@@ -50,8 +50,22 @@ if (!ptr_results_file) {
     }
 
 for (int i = 0; i < T; i++){
-        
-        fprintf(ptr_results_file,"%i \n", result[i]);
+        if (task[i] == 4){
+            if (result[i] == -2){
+
+            fprintf(ptr_results_file,"Task%d %i %i %i infinito\n\n",task[i], cidade1[i], cidade2[i], tempo_inicial[i]);
+            }
+            else
+             fprintf(ptr_results_file,"Task%d %i %i %i %i\n\n",task[i], cidade1[i], cidade2[i], tempo_inicial[i], result[i]);
+        }
+
+        else
+        {   if (result[i] == -2){
+            fprintf(ptr_results_file,"Task%d %i %i infinito\n\n",task[i], cidade1[i], cidade2[i]);
+        }
+        else
+        fprintf(ptr_results_file,"Task%d %i %i %i\n\n",task[i], cidade1[i], cidade2[i], result[i]);
+    }
 }
    
 // close file

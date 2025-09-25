@@ -20,7 +20,7 @@ void task1_func(int con_atual){
         }
     }
 
-    printf("There is %i direct connections between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
+    //printf("There is %i direct connections between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
 
 }
 
@@ -36,6 +36,10 @@ void task2e3_func(int con_atual, int * compare){
             result[con_atual] = -1;
             return;
         }
+     else if (cidade1[con_atual] == cidade2[con_atual]){
+        result[con_atual] = 0;
+        return;
+    }
         
     while(i<L){
     if ((cidade1[con_atual] == cidade_part[i] && cidade2[con_atual] == cidade_cheg[i]) || (cidade1[con_atual] == cidade_cheg[i] && cidade2[con_atual] == cidade_part[i])){
@@ -56,7 +60,7 @@ void task2e3_func(int con_atual, int * compare){
     result[con_atual] = -2;
     if (found_con == 1)
     result[con_atual] = lower_compare;
-    printf("The smaller compare is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
+    //printf("The smaller compare is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
 
 
 }
@@ -64,40 +68,51 @@ void task2e3_func(int con_atual, int * compare){
 
 //task4 implementação
 void task4_func(int con_atual, int hora_inicial){
+
     int first_time = 0;
     int found_con = 0;
     int first_period = 0;
 
-    for (int i = 0; i<L; i++) {  
-        
+    if ((cidade1[con_atual] < 1 || cidade2[con_atual] < 1 || cidade1[con_atual] > N || cidade2[con_atual] > N || hora_inicial < 0 || hora_inicial >= 1440)){
+        result[con_atual] = -1;
+        return;
+    }
+    else if (cidade1[con_atual] == cidade2[con_atual]){
+        result[con_atual] = hora_inicial;
+        return;
+    }
+
+    result[con_atual] = -2;
+    for (int i = 0; i<L; i++) {
+
         if ((cidade1[con_atual] == cidade_part[i] && cidade2[con_atual] == cidade_cheg[i]) || (cidade1[con_atual] == cidade_cheg[i] && cidade2[con_atual] == cidade_part[i])){  
             first_period = first[i];
 
-            for (; first_period < hora_inicial; first_period += period[i]);         
-            
-             first_time = first_period + time [i];
+            while (first_period < hora_inicial){
+                first_period += period[i];
+
+                if (first_period > last[i]){
+                   first_period = first[i] + 1440;
+                }
+            }
+
+            first_time = first_period + time [i];
 
             
             if (found_con == 0){
                 result[con_atual] = first_time;
-            }   
-
-            found_con = 1;
+                found_con=1;
+            }
+            
 
             if (first_time < result[con_atual]) {
-                 result[con_atual] = first_time;
+                result[con_atual] = first_time;
             }
-
         }
-        else if ((cidade1[con_atual] < 1 || cidade2[con_atual] < 1 || cidade1[con_atual] > N || cidade2[con_atual] > N)) 
-        {
-            result[con_atual] = -1;
-        }
+    
     }
-    result[con_atual] = -2;
-   // printf("There best time is %i between %d and %d\n", result[con_atual], cidade1[con_atual], cidade2[con_atual]);
 
-}
+}   
 
 
 //task5 implementação
@@ -107,7 +122,7 @@ void task5_func(int con_atual) {
     int city_b = cidade2[con_atual];
 
     // Verificar se é um problema admissível
-    if (city_a < 1 || city_b < 1 || city_a > N || city_b > N) {
+    if (city_a < 1 || city_b < 1 || city_a > N || city_b > N || cidade1[con_atual] == cidade2[con_atual]) {
         result[con_atual] = -1;
         return;
     }
