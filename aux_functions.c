@@ -9,7 +9,7 @@
 #include "global.h"
 
 // Funcao auxiliar para imprimir os dados dos arrays
-void print_arrays(void) {
+void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period) {
 
     printf("\n=== Array Data ===\n");
     for (int i = 0; i < L; i++) {
@@ -62,7 +62,7 @@ const char* Enum_int_to_str(int transport_enum){
 
 
 // free dos dados armazenados do ficheiro map
-void free_vectors_map(void) {
+void free_vectors_map(int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period) {
 
     free(cidade_part);
         cidade_part = NULL;
@@ -93,7 +93,7 @@ void free_vectors_map(void) {
 
 
 // free dos dados armazenados do ficheiro quests
-void free_vectors_quests() {
+void free_vectors_quests(int *task, int *cidade1, int *cidade2, int *tempo_inicial, int *result) {
 
     free(task);
         task = NULL;

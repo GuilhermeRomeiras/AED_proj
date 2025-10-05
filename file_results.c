@@ -10,7 +10,7 @@
 #include "global.h"
 
 
-void results_file(char * filename_quests, int T){
+void results_file(char * filename_quests, int T, int *task, int *cidade1, int *cidade2, int *tempo_inicial, int *result){
 
 const char* dot_pos = strrchr(filename_quests, '.');
 

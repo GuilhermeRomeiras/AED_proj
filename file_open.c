@@ -10,7 +10,8 @@
 #include "global.h"
 
 // funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
-int read_file_map(const char *filename_map)
+int read_file_map(const char *filename_map, int N, int L, 
+    int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period)
 {
 
     // pointer para o ficheiro a ser aberto
@@ -32,6 +33,9 @@ int read_file_map(const char *filename_map)
         exit(0);
     }
 
+    // dentro da funcao read_file_map() logo após fscanf de N e L
+    init_nodes(N);
+
     // printf("Cities: %d, Connections: %d\n", N, L);
 
     // Declarar arrays para cada coluna
@@ -50,7 +54,7 @@ int read_file_map(const char *filename_map)
         // printf("Memory error\n");
 
         // Libertar memoria ja alocada
-        free_vectors_map();
+        free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);
         fclose(file_map);
         exit(0);
     }
@@ -87,6 +91,9 @@ int read_file_map(const char *filename_map)
             first[i] = tmp_first;
             last[i] = tmp_last;
             period[i] = tmp_p;
+            // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
+            nodes(tmp_cc, i);
+            nodes(tmp_cp, i); // chamamos esta funcao apenas se for necessario separar as ligacoes em a->b e b->a e não a<->b
         }
 
         else
@@ -103,9 +110,9 @@ int read_file_map(const char *filename_map)
     return 0;
 }
 
-
 // Funcao que abre e analisa o ficheiro .quests
-int read_file_quests(char *filename_quests, int T)
+int read_file_quests(char *filename_quests, int T, int N, int L, int *cidade_part, int *cidade_cheg, int *first, int *last, int *period,
+     int *task, int *cidade1, int *cidade2, int *tempo_inicial, int *result, int *time, int *cost)
 {
     FILE *file_quests = fopen(filename_quests, "r");
     if (!file_quests)
@@ -116,7 +123,7 @@ int read_file_quests(char *filename_quests, int T)
     // printf("File opened successfully again!\n\n");
 
     // loop for que le o ficheiro linha a linha incrementando i até T
-    for (int i = 0; i < T; i++)
+    for (int i = 0; i < T; i++) 
     {
         // se ler 1 string e 3 inteiros sabemos que é task4, armazenamos e damos cast da funcao que a resolve
 
@@ -130,7 +137,8 @@ int read_file_quests(char *filename_quests, int T)
             if (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i]) != 3)
                 exit(0);
 
-            task4_func(i, tempo_inicial[i]);
+            task4_func(i, tempo_inicial[i], N,  L, cidade1,  cidade2, cidade_part,  cidade_cheg, result, time, first, last, period);
+
             break;
 
         case 1:
@@ -138,7 +146,7 @@ int read_file_quests(char *filename_quests, int T)
             if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) != 2)
                 exit(0);
 
-            task1_func(i);
+            task1_func(i, N, L, cidade1, cidade2, cidade_part, cidade_cheg, result);
             break;
 
             // task2
@@ -147,7 +155,7 @@ int read_file_quests(char *filename_quests, int T)
             if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) != 2)
                 exit(0);
 
-            task2e3_func(i, time);
+            task2e3_func(i, time, N, L, cidade1, cidade2, cidade_part, cidade_cheg, result);
             break;
 
             // task3
@@ -155,7 +163,7 @@ int read_file_quests(char *filename_quests, int T)
             if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) != 2)
                 exit(0);
 
-            task2e3_func(i, cost);
+            task2e3_func(i, cost, N, L, cidade1, cidade2, cidade_part, cidade_cheg, result);
             break;
 
         // task5
@@ -163,7 +171,7 @@ int read_file_quests(char *filename_quests, int T)
             if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) != 2)
                 exit(0);
 
-            task5_func(i);
+           task5_func(i, N, cidade1,  cidade2,  result);
             break;
 
         default:

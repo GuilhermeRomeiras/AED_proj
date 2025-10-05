@@ -1,10 +1,17 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+// struct do tratamento de cidades
+typedef struct cidades_adjacentes
+{
+    int *next_cidade;
+    int *lig_id;
 
-extern int N, L;
-extern int *cidade_part, *cidade_cheg, *automovel, *time, *cost, *first, *last, *period;
-extern int *task, *cidade1, *cidade2, *tempo_inicial, *result;
+    int num_lig;
+    int capacidade;
+} adj;
+extern adj *cidades;
+
 
 
 #endif

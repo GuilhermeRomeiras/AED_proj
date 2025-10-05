@@ -1,14 +1,14 @@
 #ifndef TASK_FUNCTIONS_C
 #define TASK_FUNCTIONS_C
 #include <stdio.h>
-
+#include <stdlib.h>
 
 
 #include "header.h"  // Para ter acesso às declarações
 #include "global.h"
 
 //task1 implementação
-void task1_func(int con_atual){
+void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result){
 
     for (int i = 0; i<L; i++) {  
         if ((cidade1[con_atual] == cidade_part[i] && cidade2[con_atual] == cidade_cheg[i]) || (cidade1[con_atual] == cidade_cheg[i] && cidade2[con_atual] == cidade_part[i])){   
@@ -27,7 +27,7 @@ void task1_func(int con_atual){
 
 //task2 implementação
 //task3 implementação
-void task2e3_func(int con_atual, int * compare){
+void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result){
 
     int found_con = 0, lower_compare = 0, i = 0;
 
@@ -67,7 +67,7 @@ void task2e3_func(int con_atual, int * compare){
 
 
 //task4 implementação
-void task4_func(int con_atual, int hora_inicial){
+void task4_func(int con_atual, int hora_inicial, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result, int *time, int *first, int *last, int *period){
 
     int first_time = 0;
     int found_con = 0;
@@ -114,55 +114,68 @@ void task4_func(int con_atual, int hora_inicial){
 
 }   
 
+//task 5
+void init_nodes(int N) {
+    
+    cidades = malloc((N+1) * sizeof(adj));
+    for(int i = 1; i <= N; i++){        // Para cada cidade
+        cidades[i].next_cidade = malloc(N_INICIAL * sizeof(int));  // Malloc individual
+        cidades[i].lig_id = malloc(N_INICIAL * sizeof(int));       // Malloc individual
+        cidades[i].num_lig = 0;
+        cidades[i].capacidade = N_INICIAL;
+    }
 
-//task5 implementação
-void task5_func(int con_atual) {
+}
 
-    int city_a = cidade1[con_atual];
-    int city_b = cidade2[con_atual];
+int nodes(int next_cidade, int lig_id){
 
-    // Verificar se é um problema admissível
-    if (city_a < 1 || city_b < 1 || city_a > N || city_b > N || cidade1[con_atual] == cidade2[con_atual]) {
+    int nl = cidades->num_lig;
+    if(nl >= cidades->capacidade){
+        cidades->next_cidade = realloc(cidades->next_cidade, (cidades->capacidade + N_BYTES) * sizeof(int));
+        cidades->lig_id = realloc(cidades->lig_id, (cidades->capacidade + N_BYTES) * sizeof(int));
+        cidades->capacidade += N_BYTES;
+    }
+    
+    cidades->next_cidade[nl] = next_cidade;
+    cidades->lig_id[nl] = lig_id;
+    cidades->num_lig++;
+    return 0;
+
+}
+
+void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result) {
+
+    int city1 = cidade1[con_atual];
+    int city2 = cidade2[con_atual];
+
+     // Verificar se é um problema admissível
+    if (city1 < 1 || city2 < 1 || city1 > N || city2 > N || city1 == city2) {
         result[con_atual] = -1;
         return;
     }
-
-    // Verificar se NÃO existe ligação direta (pré-requisito da task5)
-    for (int i = 0; i < L; i++) {
-        if ((cidade_part[i] == city_a && cidade_cheg[i] == city_b) ||
-            (cidade_part[i] == city_b && cidade_cheg[i] == city_a)) {
-            result[con_atual] = -1;
+    
+    // Verificar se há conexão direta (adjacências de city1)
+    for (int i = 0; i < cidades[city1].num_lig; i++) {
+        if (cidades[city1].next_cidade[i] == city2) {
+            result[con_atual] = 0; 
             return;
         }
-    }   
-
-    // Procurar cidade intermediária
-    for (int i = 0; i < L; i++) {
-        int cidade_intermed = -1;
+    }
+    
+    // Se não há conexão direta, procurar cidade intermediária para cada vizinho de city1
+    for (int i = 0; i < cidades[city1].num_lig; i++) {
+        int cidade_intermediaria = cidades[city1].next_cidade[i];
         
-        // Ver se esta ligação conecta com city_a
-        if (cidade_part[i] == city_a) {
-            cidade_intermed = cidade_cheg[i];
-        } 
-        else if (cidade_cheg[i] == city_a) {
-            cidade_intermed = cidade_part[i];
-        }
-        
-        // Se encontrou intermediária, ver se ela conecta com city_b
-        if (cidade_intermed != -1) {
-            for (int j = 0; j < L; j++) {
-                if ((cidade_part[j] == cidade_intermed && cidade_cheg[j] == city_b) ||
-                    (cidade_cheg[j] == cidade_intermed && cidade_part[j] == city_b)) {
-                    result[con_atual] = 1;  // Encontrou caminho
-                    return;
-                }
+        // Verificar se cidade intermediária conecta a city2
+        for (int j = 0; j < cidades[cidade_intermediaria].num_lig; j++) {
+            if (cidades[cidade_intermediaria].next_cidade[j] == city2) {
+                result[con_atual] = 1;
+                return;
             }
         }
     }
-    result[con_atual] = 0;  // Não encontrou caminho
-
-}
     
+}
 
 
 
