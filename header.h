@@ -1,7 +1,7 @@
 #ifndef HEADER_H
 #define HEADER_H
-#define N_INICIAL 20
-#define N_BYTES 1024
+#define N_INICIAL 10
+
 
 
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
@@ -15,9 +15,11 @@ int contar_tasks(const char* filename_quests);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
-void task4_func(int con_atual, int hora_inicial, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result, int *time, int *first, int *last, int *period);
+void task4_func(int con_atual, int hora_inicial, int N, int L, 
+     int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result, int *time, int *first, int *last, int *period);
+
 void init_nodes(int N);
-int nodes(int next_cidade, int lig_id);
+int nodes(int nc, int con_atual, int tmp_cp, int num_lig);
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result);
 
 void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);

@@ -17,9 +17,9 @@ adj *cidades;
 
 int main(int argc, char *argv[])
 {   
-    int N, L;
-    int *cidade_part, *cidade_cheg, *automovel, *time, *cost, *first, *last, *period;
-    int *task, *cidade1, *cidade2, *tempo_inicial, *result;
+    int N = 0, L = 0;
+    int *cidade_part = NULL, *cidade_cheg = NULL, *automovel = NULL, *time = NULL, *cost = NULL, *first = NULL, *last = NULL, *period = NULL;
+    int *task = NULL, *cidade1 = NULL, *cidade2 = NULL, *tempo_inicial = NULL, *result = NULL;
 
     // verificar os comandos do terminal
     if (argc != 3)

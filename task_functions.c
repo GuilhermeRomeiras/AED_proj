@@ -127,23 +127,23 @@ void init_nodes(int N) {
 
 }
 
-int nodes(int next_cidade, int lig_id){
+int nodes(int nc, int con_atual, int tmp_cp, int num_lig) {
 
-    int nl = cidades->num_lig;
-    if(nl >= cidades->capacidade){
-        cidades->next_cidade = realloc(cidades->next_cidade, (cidades->capacidade + N_BYTES) * sizeof(int));
-        cidades->lig_id = realloc(cidades->lig_id, (cidades->capacidade + N_BYTES) * sizeof(int));
-        cidades->capacidade += N_BYTES;
+    if(con_atual >= cidades[tmp_cp].capacidade){
+        cidades[tmp_cp].next_cidade = realloc(cidades[tmp_cp].next_cidade, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[tmp_cp].lig_id = realloc(cidades[tmp_cp].lig_id, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[tmp_cp].capacidade = cidades[tmp_cp].capacidade * 2;
     }
-    
-    cidades->next_cidade[nl] = next_cidade;
-    cidades->lig_id[nl] = lig_id;
-    cidades->num_lig++;
+
+    cidades[tmp_cp].next_cidade[num_lig] = nc;
+    cidades[tmp_cp].lig_id[num_lig] = con_atual;
+    cidades[tmp_cp].num_lig++;
     return 0;
 
 }
 
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result) {
+    
 
     int city1 = cidade1[con_atual];
     int city2 = cidade2[con_atual];
