@@ -19,7 +19,7 @@ void task4_func(int con_atual, int hora_inicial, int N, int L,
      int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result, int *time, int *first, int *last, int *period);
 
 void init_nodes(int N);
-int nodes(int nc, int con_atual, int tmp_cp, int num_lig);
+int nodes(int tmp_cp, int ntmp_cc, int con_atual);
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result);
 
 void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);

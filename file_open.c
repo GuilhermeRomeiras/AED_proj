@@ -60,6 +60,7 @@ int read_file_map(const char *filename_map, int N, int L,
     }
 
     int n_con = 0; // Contador de conexoes lidas com sucesso
+    
     for (int i = 0; i < L; i++)
     {
         char str[10];
@@ -92,7 +93,7 @@ int read_file_map(const char *filename_map, int N, int L,
             last[i] = tmp_last;
             period[i] = tmp_p;
             // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
-
+        nodes(tmp_cp, tmp_cc, i);
            // chamamos esta funcao apenas se for necessario separar as ligacoes em a->b e b->a e não a<->b
         }
 

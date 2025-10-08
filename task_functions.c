@@ -114,7 +114,7 @@ void task4_func(int con_atual, int hora_inicial, int N, int L, int *cidade1,  in
 
 }   
 
-//task 5
+
 void init_nodes(int N) {
     
     cidades = malloc((N+1) * sizeof(adj));
@@ -127,7 +127,7 @@ void init_nodes(int N) {
 
 }
 
-int nodes(int nc, int con_atual, int tmp_cp, int num_lig) {
+int nodes(int tmp_cp, int ntmp_cc, int con_atual) {
 
     if(con_atual >= cidades[tmp_cp].capacidade){
         cidades[tmp_cp].next_cidade = realloc(cidades[tmp_cp].next_cidade, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
@@ -135,13 +135,14 @@ int nodes(int nc, int con_atual, int tmp_cp, int num_lig) {
         cidades[tmp_cp].capacidade = cidades[tmp_cp].capacidade * 2;
     }
 
-    cidades[tmp_cp].next_cidade[num_lig] = nc;
-    cidades[tmp_cp].lig_id[num_lig] = con_atual;
+    cidades[tmp_cp].next_cidade[cidades[tmp_cp].num_lig] = ntmp_cc;
+    cidades[tmp_cp].lig_id[cidades[tmp_cp].num_lig] = con_atual;
     cidades[tmp_cp].num_lig++;
     return 0;
 
 }
 
+//task 5
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result) {
     
 
