@@ -115,33 +115,6 @@ void task4_func(int con_atual, int hora_inicial, int N, int L, int *cidade1,  in
 }   
 
 
-void init_nodes(int N) {
-    
-    cidades = malloc((N+1) * sizeof(adj));
-    for(int i = 1; i <= N; i++){        // Para cada cidade
-        cidades[i].next_cidade = malloc(N_INICIAL * sizeof(int));  // Malloc individual
-        cidades[i].lig_id = malloc(N_INICIAL * sizeof(int));       // Malloc individual
-        cidades[i].num_lig = 0;
-        cidades[i].capacidade = N_INICIAL;
-    }
-
-}
-
-int nodes(int tmp_cp, int ntmp_cc, int con_atual) {
-
-    if(con_atual >= cidades[tmp_cp].capacidade){
-        cidades[tmp_cp].next_cidade = realloc(cidades[tmp_cp].next_cidade, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
-        cidades[tmp_cp].lig_id = realloc(cidades[tmp_cp].lig_id, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
-        cidades[tmp_cp].capacidade = cidades[tmp_cp].capacidade * 2;
-    }
-
-    cidades[tmp_cp].next_cidade[cidades[tmp_cp].num_lig] = ntmp_cc;
-    cidades[tmp_cp].lig_id[cidades[tmp_cp].num_lig] = con_atual;
-    cidades[tmp_cp].num_lig++;
-    return 0;
-
-}
-
 //task 5
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result) {
     
@@ -154,11 +127,11 @@ void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result)
         result[con_atual] = -1;
         return;
     }
-    
+
     // Verificar se há conexão direta (adjacências de city1)
     for (int i = 0; i < cidades[city1].num_lig; i++) {
-        if (cidades[city1].next_cidade[i] == city2) {
-            result[con_atual] = 0; 
+        if (cidades[city1].next_cidade[i] == city2 || cidades[city2].next_cidade[i] == city1 ) {
+            result[con_atual] = -1; 
             return;
         }
     }
@@ -175,7 +148,6 @@ void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result)
             }
         }
     }
-    
 }
 
 

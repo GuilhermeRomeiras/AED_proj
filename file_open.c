@@ -10,43 +10,14 @@
 #include "global.h"
 
 // funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
-int read_file_map(const char *filename_map, int N, int L, 
-    int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period)
+int read_file_map(const char *filename_map, FILE *file_map, int N, int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period)
 {
-
-    // pointer para o ficheiro a ser aberto
-    FILE *file_map = fopen(filename_map, "r");
-
-    if (!file_map)
-    {
-        perror(filename_map);
-        exit(0);
-    }
-
-    // printf("File opened successfully!\n");
-
-    // o fscanf para extrair o cabecalho
-    if (fscanf(file_map, "%d %d", &N, &L) != 2)
-    {
-        // printf("Header error\n");
-        fclose(file_map);
-        exit(0);
-    }
-
     // dentro da funcao read_file_map() logo após fscanf de N e L
     init_nodes(N);
 
     // printf("Cities: %d, Connections: %d\n", N, L);
 
     // Declarar arrays para cada coluna
-    cidade_part = malloc(L * sizeof(int)); // coluna 1
-    cidade_cheg = malloc(L * sizeof(int)); // coluna 2
-    automovel = malloc(L * sizeof(int));   // coluna 3 (enum)
-    time = malloc(L * sizeof(int));        // coluna 5
-    cost = malloc(L * sizeof(int));        // coluna 4
-    first = malloc(L * sizeof(int));       // coluna 6
-    last = malloc(L * sizeof(int));        // coluna 7
-    period = malloc(L * sizeof(int));      // coluna 8
 
     // Verificar se todos os malloc foram bem sucedidos
     if (!cidade_part || !cidade_cheg || !automovel || !time || !cost || !first || !last || !period)
@@ -92,8 +63,10 @@ int read_file_map(const char *filename_map, int N, int L,
             first[i] = tmp_first;
             last[i] = tmp_last;
             period[i] = tmp_p;
-            // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
+
+        // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
         nodes(tmp_cp, tmp_cc, i);
+        print_city (N);
            // chamamos esta funcao apenas se for necessario separar as ligacoes em a->b e b->a e não a<->b
         }
 
@@ -104,8 +77,8 @@ int read_file_map(const char *filename_map, int N, int L,
             return 0;
         }
         n_con++;
-    }
-
+    }   
+    
     // printf("Successfully read %d right connections from %d total!\n", n_con, L);
     fclose(file_map);
     return 0;
@@ -136,7 +109,7 @@ int read_file_quests(char *filename_quests, int T, int N, int L, int *cidade_par
         case 4:
 
             if (fscanf(file_quests, " %i %i %i ", &cidade1[i], &cidade2[i], &tempo_inicial[i]) != 3)
-                exit(0);
+               exit(0);
 
             task4_func(i, tempo_inicial[i], N,  L, cidade1,  cidade2, cidade_part,  cidade_cheg, result, time, first, last, period);
 

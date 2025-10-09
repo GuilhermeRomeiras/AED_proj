@@ -8,6 +8,51 @@
 #include "header.h"
 #include "global.h"
 
+void init_nodes(int N) {
+    
+    cidades = malloc((N+1) * sizeof(adj));
+    for(int i = 1; i <= N; i++){        // Para cada cidade
+        cidades[i].next_cidade = malloc(N_INICIAL * sizeof(int));  // Malloc individual
+        cidades[i].lig_id = malloc(N_INICIAL * sizeof(int));       // Malloc individual
+        cidades[i].num_lig = 0;
+        cidades[i].capacidade = N_INICIAL;
+    }
+
+}
+
+int nodes(int tmp_cp, int ntmp_cc, int con_atual) {
+
+    if(con_atual >= cidades[tmp_cp].capacidade){
+        cidades[tmp_cp].next_cidade = realloc(cidades[tmp_cp].next_cidade, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[tmp_cp].lig_id = realloc(cidades[tmp_cp].lig_id, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[tmp_cp].capacidade = cidades[tmp_cp].capacidade * 2;
+    }
+
+    cidades[tmp_cp].next_cidade[cidades[tmp_cp].num_lig] = ntmp_cc;
+    cidades[tmp_cp].lig_id[cidades[tmp_cp].num_lig] = con_atual;
+    cidades[tmp_cp].num_lig++;
+    return 0;
+
+}
+
+// Funcao auxiliar para imprimir a rede de cidades
+void print_city (int N) {
+    printf("%i", N);
+    printf("\n=== city Data ===\n");
+   
+    for (int i = 1; i <= N; i++) {
+        
+        printf("Connection %d:\n", i+1);
+        printf("  next city: %d  lig_id: %d\n",
+                   cidades[i].next_cidade[i], cidades[i].lig_id[i]);
+        printf("\n\n");
+        printf("  num_lig: %d\n", cidades[i].num_lig);
+        printf(" capacidade: %d\n", cidades[i].capacidade);
+
+    }
+
+}
+
 // Funcao auxiliar para imprimir os dados dos arrays
 void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period) {
 
@@ -27,7 +72,6 @@ void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, in
     }
 
 }
-
 
 
 // Funcao que transforma a string do ficheiro em inteiro para melhor manipulacao
@@ -108,6 +152,17 @@ void free_vectors_quests(int *task, int *cidade1, int *cidade2, int *tempo_inici
         tempo_inicial = NULL; 
     free(result);
         result = NULL;
+
+}
+
+void free_cidades(int N) {
+
+    for(int i = 1; i <= N; i++){        // Para cada cidade
+        free(cidades[i].next_cidade);  // Free individual
+        free(cidades[i].lig_id);       // Free individual
+    }
+    free(cidades);
+    cidades = NULL;
 
 }
 
