@@ -8,10 +8,8 @@ typedef struct cidades_adjacentes
     int *lig_id;
 
     int num_lig;
-    int capacidade;
+    int capacidade ;
 } adj;
 extern adj *cidades;
-
-
 
 #endif

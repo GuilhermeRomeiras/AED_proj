@@ -66,7 +66,6 @@ int read_file_map(const char *filename_map, FILE *file_map, int N, int L, int *c
 
         // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
         nodes(tmp_cp, tmp_cc, i);
-        print_city (N);
            // chamamos esta funcao apenas se for necessario separar as ligacoes em a->b e b->a e não a<->b
         }
 
@@ -78,7 +77,7 @@ int read_file_map(const char *filename_map, FILE *file_map, int N, int L, int *c
         }
         n_con++;
     }   
-    
+    //print_city (N);
     // printf("Successfully read %d right connections from %d total!\n", n_con, L);
     fclose(file_map);
     return 0;
@@ -145,7 +144,7 @@ int read_file_quests(char *filename_quests, int T, int N, int L, int *cidade_par
             if (fscanf(file_quests, " %i %i ", &cidade1[i], &cidade2[i]) != 2)
                 exit(0);
 
-           task5_func(i, N, cidade1,  cidade2,  result);
+          // task5_func(i, N, cidade1,  cidade2,  result);
             break;
 
         default:

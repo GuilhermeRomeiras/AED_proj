@@ -20,37 +20,48 @@ void init_nodes(int N) {
 
 }
 
-int nodes(int tmp_cp, int ntmp_cc, int con_atual) {
+int nodes(int ntmp_cp, int ntmp_cc, int con_atual) {
 
-    if(con_atual >= cidades[tmp_cp].capacidade){
-        cidades[tmp_cp].next_cidade = realloc(cidades[tmp_cp].next_cidade, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
-        cidades[tmp_cp].lig_id = realloc(cidades[tmp_cp].lig_id, (cidades[tmp_cp].capacidade) * 2 * sizeof(int));
-        cidades[tmp_cp].capacidade = cidades[tmp_cp].capacidade * 2;
+    if( cidades[ntmp_cp].num_lig >= cidades[ntmp_cp].capacidade){
+        cidades[ntmp_cp].next_cidade = realloc(cidades[ntmp_cp].next_cidade, (cidades[ntmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[ntmp_cp].lig_id = realloc(cidades[ntmp_cp].lig_id, (cidades[ntmp_cp].capacidade) * 2 * sizeof(int));
+        cidades[ntmp_cp].capacidade = cidades[ntmp_cp].capacidade * 2;
     }
 
-    cidades[tmp_cp].next_cidade[cidades[tmp_cp].num_lig] = ntmp_cc;
-    cidades[tmp_cp].lig_id[cidades[tmp_cp].num_lig] = con_atual;
-    cidades[tmp_cp].num_lig++;
+    else if(cidades[ntmp_cc].num_lig >= cidades[ntmp_cc].capacidade){
+        cidades[ntmp_cc].next_cidade = realloc(cidades[ntmp_cc].next_cidade, (cidades[ntmp_cc].capacidade) * 2 * sizeof(int));
+        cidades[ntmp_cc].lig_id = realloc(cidades[ntmp_cc].lig_id, (cidades[ntmp_cc].capacidade) * 2 * sizeof(int));
+        cidades[ntmp_cc].capacidade = cidades[ntmp_cc].capacidade * 2;
+    }
+
+    cidades[ntmp_cp].next_cidade[cidades[ntmp_cp].num_lig] = ntmp_cc;
+    cidades[ntmp_cp].lig_id[cidades[ntmp_cp].num_lig] = con_atual;
+    cidades[ntmp_cp].num_lig++;
+
+    cidades[ntmp_cc].next_cidade[cidades[ntmp_cc].num_lig] = ntmp_cp;
+    cidades[ntmp_cc].lig_id[cidades[ntmp_cc].num_lig] = con_atual;
+    cidades[ntmp_cc].num_lig++;
     return 0;
 
 }
 
+
 // Funcao auxiliar para imprimir a rede de cidades
 void print_city (int N) {
-    printf("%i", N);
+    printf("N: %i \n", N);
     printf("\n=== city Data ===\n");
    
     for (int i = 1; i <= N; i++) {
-        
-        printf("Connection %d:\n", i+1);
-        printf("  next city: %d  lig_id: %d\n",
-                   cidades[i].next_cidade[i], cidades[i].lig_id[i]);
-        printf("\n\n");
+        printf("City %d:", i);
+        for (int j = 0; j < cidades[i].num_lig; j++)
+        {         
+                 printf("  next city: %d  lig_id: %d\n",
+                   cidades[i].next_cidade[j], cidades[i].lig_id[j]);
+        }
+        printf("\n");
         printf("  num_lig: %d\n", cidades[i].num_lig);
-        printf(" capacidade: %d\n", cidades[i].capacidade);
-
+        printf(" capacidade: %d\n\n", cidades[i].capacidade);
     }
-
 }
 
 // Funcao auxiliar para imprimir os dados dos arrays

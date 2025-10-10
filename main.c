@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     /*for (int i=0; i<T; i++)
     printf("%i\n", result[i]);*/
 
-    results_file(filename_quests, T, task, cidade1, cidade2, tempo_inicial, result);
+    //results_file(filename_quests, T, task, cidade1, cidade2, tempo_inicial, result);
     
     
     // Libertar toda a memoria dos arrays no fim da execucao do programa

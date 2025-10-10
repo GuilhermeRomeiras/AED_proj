@@ -115,7 +115,7 @@ void task4_func(int con_atual, int hora_inicial, int N, int L, int *cidade1,  in
 }   
 
 
-//task 5
+/*task 5
 void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result) {
     
 
@@ -150,7 +150,7 @@ void task5_func(int con_atual, int N, int *cidade1,  int *cidade2,  int *result)
     }
 }
 
-
+*/
 
 
 #endif
