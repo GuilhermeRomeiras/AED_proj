@@ -28,7 +28,7 @@ int nodes(int ntmp_cp, int ntmp_cc, int con_atual) {
         cidades[ntmp_cp].capacidade = cidades[ntmp_cp].capacidade * 2;
     }
 
-    else if(cidades[ntmp_cc].num_lig >= cidades[ntmp_cc].capacidade){
+    if(cidades[ntmp_cc].num_lig >= cidades[ntmp_cc].capacidade){
         cidades[ntmp_cc].next_cidade = realloc(cidades[ntmp_cc].next_cidade, (cidades[ntmp_cc].capacidade) * 2 * sizeof(int));
         cidades[ntmp_cc].lig_id = realloc(cidades[ntmp_cc].lig_id, (cidades[ntmp_cc].capacidade) * 2 * sizeof(int));
         cidades[ntmp_cc].capacidade = cidades[ntmp_cc].capacidade * 2;

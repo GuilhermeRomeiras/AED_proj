@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     }
 
     char *filename_map = argv[1];
-    char *filename_quests = argv[2];
+    char *filename_clients = argv[2];
 
     // pointer para o ficheiro a ser aberto
     FILE *file_map = fopen(filename_map, "r");
@@ -35,6 +35,13 @@ int main(int argc, char *argv[])
     if (!file_map)
     {
         perror(filename_map);
+        exit(0);
+    }
+
+    FILE *file_clients = fopen(filename_clients, "r");
+    if (!file_clients)
+    {
+        perror(filename_clients);
         exit(0);
     }
 
@@ -59,19 +66,20 @@ int main(int argc, char *argv[])
    int *period = malloc(L * sizeof(int));      // coluna 8
 
     // cast da funcao que abre o ficheiro e conta o nº de tasks
-    int T = contar_tasks(filename_quests);
+   // int T = contar_clients(filename_clients);
 
-    // armazenamento dinamico dos arrays tasks
-    int *task = malloc(T * sizeof(int));
+    /* armazenamento dinamico dos arrays clients
+    int *client = malloc(T * sizeof(int));
     int *cidade1 = malloc(T * sizeof(int));
     int *cidade2 = malloc(T * sizeof(int));
     int *tempo_inicial = malloc(T * sizeof(int));
-    int *result = calloc(T, sizeof(int));
+    int *result = calloc(T, sizeof(int));*/
 
-    read_file_map(filename_map, file_map, N, L,
+    read_file_map(file_map, N, L,
      cidade_part,cidade_cheg, automovel, time, cost, first, last, period);
-    read_file_quests(filename_quests, T, N, L, cidade_part, cidade_cheg, first, last, period,
-     task, cidade1, cidade2, tempo_inicial, result, time, cost);
+    read_file_clients(file_clients);
+    //read_file_quests(filename_quests, T, N, L, cidade_part, cidade_cheg, first, last, period,
+    // task, cidade1, cidade2, tempo_inicial, result, time, cost);
 
     // print_arrays();
 
@@ -79,11 +87,11 @@ int main(int argc, char *argv[])
     printf("%i\n", result[i]);*/
 
     //results_file(filename_quests, T, task, cidade1, cidade2, tempo_inicial, result);
-    
+    fclose(file_clients);
     
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);
-    free_vectors_quests(task, cidade1, cidade2, tempo_inicial, result);
+  //  free_vectors_quests(task, cidade1, cidade2, tempo_inicial, result);
     free_cidades(N);
 
 

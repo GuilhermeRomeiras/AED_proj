@@ -1,12 +1,15 @@
+#include <stdio.h>
+
 #ifndef HEADER_H
 #define HEADER_H
 #define N_INICIAL 10
 
 
 
+
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 
-int read_file_map(const char *filename_map, FILE *file_map, int N, int L,
+int read_file_map(FILE *file_map, int N, int L,
      int *cidade_part,int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);
 int read_file_quests(char *filename_quests, int T, int N, int L, int *cidade_part, int *cidade_cheg, int *first, int *last, int *period,
      int *task, int *cidade1, int *cidade2, int *tempo_inicial, int *result, int *time, int *cost);
