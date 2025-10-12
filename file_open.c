@@ -48,7 +48,7 @@ int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_ch
                    &tmp_p) == 8)
         {
 
-            tmp_aut = Enum_str_to_int(str, i);
+            tmp_aut = Enum_str_to_int(str);
 
             if (tmp_aut == 0)
             {
@@ -77,7 +77,9 @@ int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_ch
         }
         n_con++;
     }   
-    print_city (N);
+    
+    //print cities structs
+    //print_city (N);
     // printf("Successfully read %d right connections from %d total!\n", n_con, L);
     fclose(file_map);
     return 0;

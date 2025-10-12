@@ -86,7 +86,7 @@ void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, in
 
 
 // Funcao que transforma a string do ficheiro em inteiro para melhor manipulacao
-int Enum_str_to_int(const char *str, int num_con_err){
+int Enum_str_to_int(const char *str){
     
     if (strcmp(str, "aviao") == 0) return AVIAO;
     else if (strcmp(str, "comboio") == 0) return COMBOIO;
