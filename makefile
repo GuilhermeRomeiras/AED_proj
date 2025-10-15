@@ -7,7 +7,7 @@ else
 	CFLAGS += -O3
 endif
 
-SRC := main.c task_functions.c aux_functions.c file_open.c file_results.c restrictions.c clients_file.c
+SRC := main.c task_functions.c aux_functions.c file_open.c create_file_results.c restrictions.c clients_file.c
 OBJ := ${SRC:%.c=build/%.o}
 
 INC := header.h global.h

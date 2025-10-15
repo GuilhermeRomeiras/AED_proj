@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
 
     char *filename_map = argv[1];
     char *filename_clients = argv[2];
-    char *results_filename = create_results_filename(filename_clients);
 
     // pointer para o ficheiro a ser aberto
     FILE *file_map = fopen(filename_map, "r");
@@ -45,13 +44,14 @@ int main(int argc, char *argv[])
         perror(filename_clients);
         exit(0);
     }
-    
-    FILE* ptr_results_file = fopen(results_filename, "w");
+   //char *create_results_filename(char * filename_clients);
+
+   /* FILE* ptr_results_file = fopen(results_filename, "w");
     if (!ptr_results_file)
     {
         perror(results_filename);
         exit(0);
-    }
+    }*/
 
     // printf("File opened successfully!\n");
 
@@ -73,27 +73,24 @@ int main(int argc, char *argv[])
    int *last = malloc(L * sizeof(int));        // coluna 7
    int *period = malloc(L * sizeof(int));      // coluna 8
 
-    // cast da funcao que abre o ficheiro e conta o nº de tasks
-   // int T = contar_clients(filename_clients);
-
     read_file_map(file_map, N, L,
      cidade_part,cidade_cheg, automovel, time, cost, first, last, period);
 
     read_file_clients(file_clients);
     // print_arrays();
 
+
    fclose(file_clients);
 
     // close results file
-    fclose(ptr_results_file);
+    //fclose(ptr_results_file);
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);
 
   //  free_vectors_quests(task, cidade1, cidade2, tempo_inicial, result);
-    free(results_filename);
     free_cidades(N);
-    free(results_filename);
+    //free(results_filename);
 
     return 0;
 }

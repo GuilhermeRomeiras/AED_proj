@@ -12,4 +12,9 @@ typedef struct cidades_adjacentes
 } adj;
 extern adj *cidades;
 
+
+
+
+
+
 #endif

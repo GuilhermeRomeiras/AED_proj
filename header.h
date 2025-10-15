@@ -9,11 +9,11 @@
 
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 
+char *create_results_filename(char * filename_clients);
+
 int read_file_map(FILE *file_map, int N, int L,
      int *cidade_part,int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);
 int read_file_clients(FILE *file_clients);
-
-//int contar_tasks(const char* filename_quests);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
@@ -29,8 +29,20 @@ void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, in
 
 int Enum_str_to_int(const char *str);
 const char* Enum_int_to_str(int transport_enum);
+/*
+//djynsky headers
+typedef struct clients_file Item;
+typedef struct _pq PQ;
 
-char *create_results_filename(char * filename_clients);
+PQ * PQinit(int); 
+void PQinsert(PQ *, Item);
+typedef int BOOL;
+#define TRUE  1
+#define FALSE 0
+
+BOOL PQempty(PQ *);
+//Item PQdelmax(PQ *); 
+*/
 
 void free_vectors_map(int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);
 void free_cidades(int N);
