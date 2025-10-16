@@ -18,15 +18,15 @@ int read_file_clients(FILE *file_clients)
 
   */
     int client = 0, total_clients = 0, cidade1 = 0, cidade2 = 0, tempo_inicial = 0, num_restrictions = 0;
-    char string_torc[6], first_type_restriction, second_type_restriction, transport_restriction[10];
-    int max_value_restriction1 = 0, max_value_restriction2 = 0;
-    int first_value_rest = 0, sercond_value_rest = 0;
+    char string_torc[6], type_restriction, transport_restriction[10];
+    int max_value_restriction = 0, value_rest = 0;
+
 
     if (fscanf(file_clients, "%d", &total_clients) != 1)
         exit(0); // ler o numero total de clients
 
     for (int i = 0; i < total_clients; i++)
-    {
+    {   
         if (fscanf(file_clients, "%d %d %d %d %5s %d", &client, &cidade1, &cidade2, &tempo_inicial, string_torc, &num_restrictions) != 6)
             exit(0);
         printf("restrição do client %i é %i \n", client, num_restrictions);
@@ -37,27 +37,45 @@ int read_file_clients(FILE *file_clients)
         //se não houver restrições
         case 0:
 
+        
+            printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %s, Num_restrictions: %d\n\n",
+             client, cidade1, cidade2, tempo_inicial, string_torc, num_restrictions);
+
             break;
         
         //se houver uma restrição
-        case 1: function_case;
+        case 1: 
             printf("nesta task apenas há uma restrição \n");
+
+            function_case(file_clients, &type_restriction, &value_rest, transport_restriction, &max_value_restriction, i);
+
+            printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %s, Num_restrictions: %d, type_restriction: %c%i, max_value_restriction: %i\n\n",
+             client, cidade1, cidade2, tempo_inicial, string_torc, num_restrictions, type_restriction, value_rest, max_value_restriction);
+
+
            
-        
+            break;
         //se houver duas restrições
         case 2:
+            printf("nesta task há duas restrições \n");
 
-            if (fscanf(file_clients, "%c %i ", second_type_restriction, &max_value_restriction2) != 4)
-                exit(0);
+            function_case(file_clients, &type_restriction, &value_rest, transport_restriction, &max_value_restriction, i);
+            
+            printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %s, Num_restrictions: %d, type_restriction: %c%i, max_value_restriction: %i ",
+             client, cidade1, cidade2, tempo_inicial, string_torc, num_restrictions, type_restriction, value_rest, max_value_restriction);
+
+            function_case(file_clients, &type_restriction, &value_rest, transport_restriction, &max_value_restriction, i);
+            
+            printf("type_restriction: %c%i, max_value_restriction: %i\n\n", type_restriction, value_rest, max_value_restriction);
+
             
             break;
 
-        
-
         default:
-            printf("1Data format error on line %d\n", i + 1);
+            printf("Data format error on line %d\n", i + 1);
             break;
         }
+
     }
     return 1;
 }

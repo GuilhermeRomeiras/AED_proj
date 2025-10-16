@@ -14,6 +14,7 @@ char *create_results_filename(char * filename_clients);
 int read_file_map(FILE *file_map, int N, int L,
      int *cidade_part,int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period);
 int read_file_clients(FILE *file_clients);
+void function_case(FILE *file_clients, char *type_restriction, int *value_rest, char *transport_restriction, int *max_value_restriction, int i);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);

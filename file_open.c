@@ -11,7 +11,7 @@
 
 // funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
 int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period)
-{
+{   
     // dentro da funcao read_file_map() logo após fscanf de N e L
     init_nodes(N);
 
@@ -152,34 +152,6 @@ int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_ch
     return 0;
 }
 
-int contar_tasks(const char *filename_quests)
-{
-
-    FILE *file_clients = fopen(filename_quests, "r");
-    if (!file_clients)
-    {
-        perror(filename_quests);
-        exit(0);
-    }
-    // printf("File opened successfully!\n");
-
-    int num_tasks = 0;
-    char token[5];
-
-    // Lê token por token até ao fim do ficheiro
-    while (fscanf(file_clients, "%5s", token) == 1)
-    {
-
-        // Se o token começa com "Task", conta uma nova task
-        if (strncmp(token, "Task", 4) == 0)
-        {
-            num_tasks++;
-        }
-    }
-
-    fclose(file_clients);
-    // printf("File contains %d tasks\n", num_tasks);
-    return num_tasks;
-}*/
+*/
 
 #endif
