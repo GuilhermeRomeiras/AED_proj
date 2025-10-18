@@ -17,7 +17,6 @@ typedef struct cidades_adjacentes
 } adj;
 
 typedef struct Restricoes {
-    int tem_A1, tem_A2, tem_A3, tem_B1, tem_B2;
     int meio_proibido; //A1
     int max_tempo_ligacao; //A2
     int max_custo_ligacao; //A3
@@ -30,18 +29,11 @@ typedef struct Cliente {
     int cidade_origem;
     int cidade_destino;
     int tempo_inicial;
-    char preferencia[6];
+    char preferencia;
     int num_restricoes;
     Restricoes rest;  // Not a pointer, embedded struct
 } Cli;
 
-
-typedef struct InfoDijkstra {
-    int distancia;
-    int visitado;
-    int cidade_anterior;
-    int tempo_chegada;
-} Info;
 
 typedef struct Solucao {
     int id;
@@ -64,8 +56,8 @@ int read_file_clients(FILE *file_clients, Cli* p_clients_file, Restricoes *Restr
 
 void function_case(FILE *file_clients, Restricoes *rest, int client_id);
 
-void dijkstra(int source, int N, int L, int *cidade_part, int *cidade_cheg,
-              int *time, int *cost, int optimize_time, int *st, double *wt, int *st_lig, adj *cidades);
+void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_cheg,
+            int *time, int *cost);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);

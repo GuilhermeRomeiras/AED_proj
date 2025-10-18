@@ -20,22 +20,19 @@ void function_case(FILE *file_clients, Restricoes *rest, int client_id)
 
         case 1:
             if (fscanf(file_clients, "%10s", transport_restriction) == 1){
-                rest->meio_proibido = Enum_str_to_int(transport_restriction);
-                rest->tem_A1 = 1;
+                rest->meio_proibido = Enum_str_to_int(transport_restriction);//A1
             }
 
             break;
 
         case 2:
-            if (fscanf(file_clients, "%i", &rest->max_tempo_ligacao) == 1){
-                rest->tem_A2 = 1;
+            if (fscanf(file_clients, "%i", &rest->max_tempo_ligacao) == 1){//A2
             }
 
             break;
 
         case 3:
-            if (fscanf(file_clients, "%i", &rest->max_custo_ligacao) == 1){
-                rest->tem_A3 = 1;
+            if (fscanf(file_clients, "%i", &rest->max_custo_ligacao) == 1){//A3
             }
 
             break;
@@ -48,16 +45,14 @@ void function_case(FILE *file_clients, Restricoes *rest, int client_id)
         {
 
         case 1:
-            if (fscanf(file_clients, "%i", &rest->max_tempo_total) == 1){
-                rest->tem_B1 = 1;
+            if (fscanf(file_clients, "%i", &rest->max_tempo_total) == 1){ //B1
             }
            
 
             break;
 
         case 2:
-            if (fscanf(file_clients, "%i", &rest->max_custo_total) == 1){
-                rest->tem_B2 = 1;
+            if (fscanf(file_clients, "%i", &rest->max_custo_total) == 1){ //B2
             }
            
 

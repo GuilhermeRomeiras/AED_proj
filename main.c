@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     FILE *file_map = fopen(filename_map, "r");
 
     if (!file_map)
-    {
+    {   
         perror(filename_map);
         exit(0);
     }
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     FILE *file_clients = fopen(filename_clients, "r");
     if (!file_clients)
     {   
+        fclose(file_map);
         perror(filename_clients);
         exit(0);
     }
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
     if (fscanf(file_map, "%d %d", &N, &L) != 2)
     {
         // printf("Header error\n");
+        fclose(file_clients);
         fclose(file_map);
         exit(0);
     }
@@ -61,6 +63,7 @@ int main(int argc, char *argv[])
     int *first = malloc(L * sizeof(int));       // coluna 6
     int *last = malloc(L * sizeof(int));        // coluna 7
     int *period = malloc(L * sizeof(int));      // coluna 8
+
     if (cidade_part == NULL || cidade_cheg == NULL || automovel == NULL ||
     time == NULL || cost == NULL || first == NULL || last == NULL || period == NULL)
     {
@@ -88,7 +91,7 @@ int main(int argc, char *argv[])
         free(p_rest);
         exit(0);
     }
-    
+
    /* Sol *p_sol = malloc(sizeof(Sol));
     if (p_sol == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para p_sol.\n");
@@ -98,8 +101,11 @@ int main(int argc, char *argv[])
 
     read_file_map(file_map, N, L,
                   cidade_part, cidade_cheg, automovel, time, cost, first, last, period, p_cidades);
-                  // print_arrays();
+
+    // print_arrays();
+
     //print_city(N, p_cidades);
+
 
     int total_clients;
     if (fscanf(file_clients, "%d", &total_clients) != 1)
@@ -109,31 +115,27 @@ int main(int argc, char *argv[])
 
     for (int i = 1; i <= total_clients; i++)
     {  
+
         memset(p_rest, 0, sizeof(Restricoes));     
        
         read_file_clients(file_clients, p_clients_file, p_rest);
 
+        dijkstra(p_cidades, p_clients_file, N, cidade_part, cidade_cheg, time, cost);
 
         /*
-        printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %s, Num_restrictions: %d\n\n",
-             p_clients_file->id, p_clients_file->cidade_origem, p_clients_file->cidade_destino, p_clients_file->tempo_inicial,p_clients_file->preferencia, p_clients_file->num_restricoes);
+        printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
+             p_clients_file->id, p_clients_file->cidade_origem, p_clients_file->cidade_destino, p_clients_file->tempo_inicial, p_clients_file->preferencia, p_clients_file->num_restricoes);
 
             printf("Restricoes:\n"
-           "  tem_A1 = %d\n"
-           "  tem_A2 = %d\n"
-           "  tem_A3 = %d\n"
-           "  tem_B1 = %d\n"
-           "  tem_B2 = %d\n"
            "  meio_proibido = %d\n"
            "  max_tempo_ligacao = %d\n"
            "  max_custo_ligacao = %d\n"
            "  max_tempo_total = %d\n"
-           "  max_custo_total = %d\n", p_rest->tem_A1, p_rest->tem_A2, p_rest->tem_A3,
-           p_rest->tem_B1, p_rest->tem_B2,
+           "  max_custo_total = %d\n",
            p_rest->meio_proibido,
            p_rest->max_tempo_ligacao, p_rest->max_custo_ligacao,
-           p_rest->max_tempo_total, p_rest->max_custo_total);
-*/
+           p_rest->max_tempo_total, p_rest->max_custo_total);*/
+
         // print_results(FILE *ptr_results_file, p_sol, p_clients_file->id);
     }
     fclose(file_clients);

@@ -2,9 +2,10 @@
 #define DJYNSKI_C
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
 
-#include <header.h>
+#include "header.h"
 
 typedef int BOOL;
 #define TRUE 1
@@ -27,18 +28,31 @@ typedef struct
 Item p_item;
 
 PQ *PQinit(int maxN);
-void PQdec(PQ *pq, int vertex, double new_priority);
-void PQinsert(PQ *pq, int vertex, double priority);
+void PQdec(PQ *pq, int vertex, int new_priority);
+void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
 int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
 
 // Dijkstra adaptado às nossas estruturas
-void dijkstra(adj *cidades, int source, int N, int *cidade_part, int *cidade_cheg,
-              int *time, int *cost, int optimize_time, int *st_lig)
-{
+void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_cheg,
+              int *time, int *cost)
+{   
+    int st_lig[N];
+    int time_cost = 0;
+
+    switch (cliente->preferencia)
+    {    
+    case 'c':
+        time_cost = 1; 
+        break;
+    }
+    
+    int source = cliente->cidade_origem;
     int st[N];
     int wt[N];
+
+}/*
 
     PQ *pq = PQinit(N + 1);
 
@@ -68,7 +82,7 @@ void dijkstra(adj *cidades, int source, int N, int *cidade_part, int *cidade_che
                 int lig_id = cidades[v].lig_id[i];
 
                 // Escolhe peso: tempo ou custo
-                double peso = optimize_time ? time[lig_id] : cost[lig_id];
+                double peso = time_cost ? time[lig_id] : cost[lig_id];
 
                 // Relaxação
                 if (wt[w] > wt[v] + peso)
@@ -76,7 +90,7 @@ void dijkstra(adj *cidades, int source, int N, int *cidade_part, int *cidade_che
                     wt[w] = wt[v] + peso;
                     PQdec(pq, w, wt[w]);
                     st[w] = v;
-                    st_lig[w] = lig_id; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
+                    st_lig[w] = cidades[v].lig_id; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
                 }
             }
         }
@@ -84,6 +98,7 @@ void dijkstra(adj *cidades, int source, int N, int *cidade_part, int *cidade_che
 
     PQfree(pq);
 }
+
 
 PQ *PQinit(int maxN)
 {   
@@ -111,7 +126,7 @@ BOOL PQempty(PQ *pq)
 
 }
 
-void PQinsert(PQ *pq, int vertex, double priority)
+void PQinsert(PQ *pq, int vertex, int priority)
 {
     pq->queue[pq->n_elem].vertex = vertex;
     pq->queue[pq->n_elem].priority = priority;
@@ -139,7 +154,7 @@ int PQdelmin(PQ *pq)
     return min_vertex;
 }
 
-void PQdec(PQ *pq, int vertex, double new_priority)
+void PQdec(PQ *pq, int vertex, int new_priority)
 {
     for (int i = 0; i < pq->n_elem; i++)
     {
@@ -150,5 +165,5 @@ void PQdec(PQ *pq, int vertex, double new_priority)
         }
     }
 }
-
+*/
 #endif
