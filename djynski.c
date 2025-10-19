@@ -25,9 +25,9 @@ typedef struct
     int n_elem;
 } PQ;
 
-Item *p_item;
 
-PQ *PQinit(int maxN, PQ*pq);
+
+PQ *PQinit(int N);
 void PQdec(PQ *pq, int vertex, int new_priority);
 void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
@@ -35,7 +35,7 @@ int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
 
 // Dijkstra adaptado às nossas estruturas
-void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_cheg,
+void dijkstra(adj *cidades, Cli *cliente, int N,
               int *time, int *cost)
 {   
     int st_lig[N];
@@ -53,7 +53,7 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
     int wt[N];
 
 
-    PQ *pq = PQinit(N, pq);
+    PQ *pq = PQinit(N);
 
     // Inicialização
     for (int v = 1; v <= N; v++)
@@ -61,11 +61,12 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
         st[v] = -1;
         wt[v] = INT_MAX;
         PQinsert(pq, v, INT_MAX);
+        printf("st: %i e wt:%i \n", pq->queue[pq->n_elem].vertex, pq->queue[pq->n_elem].priority );
     }
 
     wt[source] = 0;
     PQdec(pq, source, 0);
-
+/*
     // Algoritmo principal
     while (!PQempty(pq))
     {
@@ -89,28 +90,33 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
                     wt[w] = wt[v] + peso;
                     PQdec(pq, w, wt[w]);
                     st[w] = v;
-                    st_lig[w] = cidades[v].lig_id; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
+                    st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
                 }
             }
         }
     }
-
+*/
     PQfree(pq);
 }
 
 
-PQ *PQinit(int N, PQ*pq)
+PQ *PQinit(int N)
 {   
-    pq = malloc(sizeof(PQ));
+    PQ *pq = malloc(sizeof(PQ));
     if (pq == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para PQ.\n");
         exit(0);
     }
 
     pq->queue = (Item *) malloc(N * sizeof(Item));
+    if (!pq->queue) {
+        free(pq);
+        fprintf(stderr, "Erro: falha ao alocar memória para PQ.\n");
+        exit(0);
+    }
     pq->size = N;
     pq->n_elem = 0;
-    return;
+    return pq;
 }
 
 void PQfree(PQ *pq)
