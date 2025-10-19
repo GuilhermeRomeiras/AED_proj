@@ -15,7 +15,7 @@ typedef int BOOL;
 typedef struct
 {
     int vertex;
-    double priority;
+    int priority;
 } Item;
 
 typedef struct
@@ -25,9 +25,9 @@ typedef struct
     int n_elem;
 } PQ;
 
-Item p_item;
+Item *p_item;
 
-PQ *PQinit(int maxN);
+PQ *PQinit(int maxN, PQ*pq);
 void PQdec(PQ *pq, int vertex, int new_priority);
 void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
@@ -52,9 +52,8 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
     int st[N];
     int wt[N];
 
-}/*
 
-    PQ *pq = PQinit(N + 1);
+    PQ *pq = PQinit(N, pq);
 
     // Inicialização
     for (int v = 1; v <= N; v++)
@@ -64,8 +63,8 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
         PQinsert(pq, v, INT_MAX);
     }
 
-    wt[source] = 0.0;
-    PQdec(pq, source, 0.0);
+    wt[source] = 0;
+    PQdec(pq, source, 0);
 
     // Algoritmo principal
     while (!PQempty(pq))
@@ -100,18 +99,18 @@ void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_c
 }
 
 
-PQ *PQinit(int maxN)
+PQ *PQinit(int N, PQ*pq)
 {   
-    PQ *pq = malloc(sizeof(PQ));
+    pq = malloc(sizeof(PQ));
     if (pq == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para PQ.\n");
         exit(0);
     }
 
-    pq->queue = (Item *) malloc(maxN * sizeof(Item));
-    pq->size = maxN;
+    pq->queue = (Item *) malloc(N * sizeof(Item));
+    pq->size = N;
     pq->n_elem = 0;
-    return pq;
+    return;
 }
 
 void PQfree(PQ *pq)
@@ -165,5 +164,5 @@ void PQdec(PQ *pq, int vertex, int new_priority)
         }
     }
 }
-*/
+
 #endif
