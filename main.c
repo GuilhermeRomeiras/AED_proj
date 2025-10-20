@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
         perror(filename_clients);
         exit(0);
     }
-    // char *create_results_filename(char * filename_clients);
+    char *create_results_filename(char * filename_clients);
 
-    /* FILE* ptr_results_file = fopen(results_filename, "w");
+    /* FILE* ptr_results_file = fopen(create_results_filename(filename_clients), "w");
      if (!ptr_results_file)
      {
-         perror(results_filename);
+         perror(create_results_filename(filename_clients));
          exit(0);
      }*/
 
@@ -132,17 +132,23 @@ int main(int argc, char *argv[])
            p_rest->max_tempo_ligacao, p_rest->max_custo_ligacao,
            p_rest->max_tempo_total, p_rest->max_custo_total);*/
 
-        // print_results(FILE *ptr_results_file, p_sol, p_clients_file->id);
+        //print_results(ptr_results_file, p_sol, p_clients_file->id);
+        if (p_sol->caminho != NULL) {
+        free(p_sol->caminho);
+        p_sol->caminho = NULL;
+        }
     }
 
     fclose(file_clients);
 
     // close results file
-   // fclose(ptr_results_file);
+  // fclose(ptr_results_file);
 
     free(p_sol);
     free(p_clients_file);
     free(p_rest);
+   // free(ptr_results_file);
+    
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);

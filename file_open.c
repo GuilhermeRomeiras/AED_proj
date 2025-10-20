@@ -54,8 +54,8 @@ int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_ch
                 continue;
             }
 
-            cidade_part[i] = tmp_cp;
-            cidade_cheg[i] = tmp_cc;
+            cidade_part[i] = tmp_cp - 1;
+            cidade_cheg[i] = tmp_cc - 1;
             automovel[i] = tmp_aut;
             time[i] = tmp_time;
             cost[i] = tmp_cost;
@@ -64,7 +64,7 @@ int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_ch
             period[i] = tmp_p;
 
         // dentro da funcao read_file_map() logo após guardar nos vetores as variaveis temporarias do fscanf (linha 89)
-        nodes(tmp_cp, tmp_cc, i, cidades);
+        nodes(tmp_cp-1, tmp_cc-1, i, cidades);
            // chamamos esta funcao apenas se for necessario separar as ligacoes em a->b e b->a e não a<->b
         }
 

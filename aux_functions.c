@@ -10,7 +10,7 @@
 
 void init_nodes(int N, adj *cidades) {
 
-    for(int i = 1; i <= N; i++){        // Para cada cidade
+    for(int i = 0; i < N; i++){        // Para cada cidade
         cidades[i].next_cidade = malloc(N_INICIAL * sizeof(int));  // Malloc individual
         cidades[i].lig_id = malloc(N_INICIAL * sizeof(int));       // Malloc individual
         cidades[i].num_lig = 0;
@@ -167,7 +167,7 @@ void free_vectors_quests(int *task, int *cidade1, int *cidade2, int *tempo_inici
 
 void free_cidades(int N, adj *cidades) {
 
-    for(int i = 1; i <= N; i++){        // Para cada cidade
+    for(int i = 0; i < N; i++){        // Para cada cidade
         free(cidades[i].next_cidade);  // Free individual
         free(cidades[i].lig_id);       // Free individual
     }

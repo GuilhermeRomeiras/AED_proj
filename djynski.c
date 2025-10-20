@@ -31,6 +31,8 @@ void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
 int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
+void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao);
+
 
 // Dijkstra adaptado às nossas estruturas
 void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
@@ -53,40 +55,42 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
     PQ *pq = PQinit(N);
 
     // Inicialização
-    for (int v = 1; v <= N; v++)
+    for (int v = 0; v < N; v++)
     {
-        st[v - 1] = -1;
-        wt[v - 1] = INT_MAX;
+        st[v] = -1;
+        wt[v] = INT_MAX;
         PQinsert(pq, v, INT_MAX);
     }
 
-    wt[source - 1] = 0;
+    wt[source] = 0;
     PQdec(pq, source, 0);
     // Algoritmo principal
 
     while (!PQempty(pq))
-    {
-        int v = PQdelmin(pq) - 1;
+    {   
+        int v = PQdelmin(pq);
         
+        printf("client: %i: %i: %i\n", cliente->id, v + 1, st[v] + 1);
         if (v == cliente->cidade_destino)
+        {
             break;
+        }
+        
 
         if (wt[v] != INT_MAX)
         {
-            printf("%i \n", wt[v]);
 
             // Percorre as adjacências de v
             for (int i = 0; i < cidades[v].num_lig; i++)
             {
                 // printf("%i : %i\n", j++, PQempty(pq));
                 int w = cidades[v].next_cidade[i];
-                int lig_id = cidades[v].lig_id[i];
+                int dijkstra_id = cidades[v].lig_id[i];
 
                 // Escolhe peso: tempo ou custo
-                int peso = time_cost ? time[lig_id] : cost[lig_id];
+                int peso = time_cost ? time[dijkstra_id] : cost[dijkstra_id];
 
-                // printf("client: %i\n %i : %i\n", cliente->id, i, st[v]);
-
+                
                 // Relaxação
                 if (wt[w] > wt[v] + peso)
                 {
@@ -95,17 +99,78 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
                     //  printf("wt_v: %i\n", wt[v]);
                     PQdec(pq, w, wt[w]);
                     st[w] = v;
+                    
                     st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
                 }
             }
         }
     }
 
+    reconstruct_path(st, st_lig, cliente->cidade_origem, cliente->cidade_destino, Solucao);
+    
+    // Guardar o custo/tempo total
+    if (Solucao->valida) {
+        int dest = cliente->cidade_destino;
+        if (cliente->preferencia == 'c') {
+            Solucao->custo_total = wt[dest];
+        } 
+        
+        else {
+            Solucao->tempo_total = wt[dest];
+        }
+    }
+    
+    // Libertar memória
     PQfree(pq);
     free(st);
     free(wt);
     free(st_lig);
+
 }
+
+
+// Função para reconstruir o caminho
+void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao) {
+    
+    int current = destination;  
+    
+    // Verificar se existe caminho
+    if (st[current] == -1 && current != source) {
+        Solucao->valida = 0;
+        Solucao->caminho_size = 0;
+        Solucao->caminho = NULL;
+        return;
+    }
+    
+    // PASSO 1: Contar quantos passos tem o caminho
+    int path_length = 0;
+    int temp = current;
+    while (temp != source) {
+        path_length++;
+        temp = st[temp];
+    }
+    
+    if(path_length == 0) {
+        Solucao->valida = 0;
+        Solucao->caminho_size = 0;
+        return;
+    }
+
+    Solucao->caminho = (int *)malloc(path_length * sizeof(int));
+    Solucao->caminho_size = path_length;
+    current = destination;  
+    
+    // PASSO 3: Preencher de trás para a frente, já invertendo!
+    // Começamos a preencher do fim do array (posição path_length-1)
+    // e vamos recuando até à posição 0    
+    for (int i = path_length - 1; i >= 0; i--) {
+        Solucao->caminho[i] = st_lig[current];
+        current = st[current];
+    }
+    
+    Solucao->valida = 1;
+}
+
 
 PQ *PQinit(int N)
 {

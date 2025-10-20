@@ -39,7 +39,7 @@ typedef struct Solucao {
     int id;
     int valida;
     int codigo_erro;
-    int caminho[1000];
+    int *caminho;
     int caminho_size;
     int tempo_total;
     int custo_total;
