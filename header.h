@@ -56,8 +56,8 @@ int read_file_clients(FILE *file_clients, Cli* p_clients_file, Restricoes *Restr
 
 void function_case(FILE *file_clients, Restricoes *rest, int client_id);
 
-void dijkstra(adj *cidades, Cli *cliente, int N, int *cidade_part, int *cidade_cheg,
-            int *time, int *cost);
+void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
+              int *time, int *cost);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);

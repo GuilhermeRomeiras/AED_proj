@@ -25,8 +25,6 @@ typedef struct
     int n_elem;
 } PQ;
 
-
-
 PQ *PQinit(int N);
 void PQdec(PQ *pq, int vertex, int new_priority);
 void PQinsert(PQ *pq, int vertex, int priority);
@@ -35,59 +33,66 @@ int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
 
 // Dijkstra adaptado às nossas estruturas
-void dijkstra(adj *cidades, Cli *cliente, int N,
+void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
               int *time, int *cost)
-{   
-    int st_lig[N];
+{
     int time_cost = 0;
 
     switch (cliente->preferencia)
-    {    
+    {
     case 'c':
-        time_cost = 1; 
+        time_cost = 1;
         break;
     }
-    
-    int source = cliente->cidade_origem;
-    int st[N];
-    int wt[N];
 
+    int source = cliente->cidade_origem;
+    int *st = malloc((N) * sizeof(int));
+    int *wt = malloc((N) * sizeof(int));
+    int *st_lig = malloc((N) * sizeof(int));
 
     PQ *pq = PQinit(N);
 
     // Inicialização
     for (int v = 1; v <= N; v++)
     {
-        st[v] = -1;
-        wt[v] = INT_MAX;
+        st[v - 1] = -1;
+        wt[v - 1] = INT_MAX;
         PQinsert(pq, v, INT_MAX);
-        printf("st: %i e wt:%i \n", pq->queue[pq->n_elem].vertex, pq->queue[pq->n_elem].priority );
     }
 
-    wt[source] = 0;
+    wt[source - 1] = 0;
     PQdec(pq, source, 0);
-/*
     // Algoritmo principal
+
     while (!PQempty(pq))
     {
-        int v = PQdelmin(pq);
+        int v = PQdelmin(pq) - 1;
+        
+        if (v == cliente->cidade_destino)
+            break;
 
         if (wt[v] != INT_MAX)
         {
+            printf("%i \n", wt[v]);
 
             // Percorre as adjacências de v
             for (int i = 0; i < cidades[v].num_lig; i++)
             {
+                // printf("%i : %i\n", j++, PQempty(pq));
                 int w = cidades[v].next_cidade[i];
                 int lig_id = cidades[v].lig_id[i];
 
                 // Escolhe peso: tempo ou custo
-                double peso = time_cost ? time[lig_id] : cost[lig_id];
+                int peso = time_cost ? time[lig_id] : cost[lig_id];
+
+                // printf("client: %i\n %i : %i\n", cliente->id, i, st[v]);
 
                 // Relaxação
                 if (wt[w] > wt[v] + peso)
                 {
                     wt[w] = wt[v] + peso;
+
+                    //  printf("wt_v: %i\n", wt[v]);
                     PQdec(pq, w, wt[w]);
                     st[w] = v;
                     st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
@@ -95,23 +100,25 @@ void dijkstra(adj *cidades, Cli *cliente, int N,
             }
         }
     }
-*/
+
     PQfree(pq);
+    free(st);
+    free(wt);
+    free(st_lig);
 }
 
-
 PQ *PQinit(int N)
-{   
+{
     PQ *pq = malloc(sizeof(PQ));
-    if (pq == NULL) {
-        fprintf(stderr, "Erro: falha ao alocar memória para PQ.\n");
+    if (!pq)
+    {
         exit(0);
     }
-
-    pq->queue = (Item *) malloc(N * sizeof(Item));
-    if (!pq->queue) {
+    pq->queue = malloc(N * sizeof(Item));
+    if (!pq->queue)
+    {
         free(pq);
-        fprintf(stderr, "Erro: falha ao alocar memória para PQ.\n");
+
         exit(0);
     }
     pq->size = N;
@@ -128,7 +135,6 @@ void PQfree(PQ *pq)
 BOOL PQempty(PQ *pq)
 {
     return pq->n_elem == 0 ? TRUE : FALSE;
-
 }
 
 void PQinsert(PQ *pq, int vertex, int priority)

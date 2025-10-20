@@ -67,37 +67,32 @@ int main(int argc, char *argv[])
     if (cidade_part == NULL || cidade_cheg == NULL || automovel == NULL ||
     time == NULL || cost == NULL || first == NULL || last == NULL || period == NULL)
     {
-        free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);
         exit(0);
     }
 
     adj *p_cidades = malloc((N+1) * sizeof(adj));
     if (p_cidades == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para p_cidades.\n");
-        free(p_cidades);
         exit(0);
     }
 
     Cli *p_clients_file = calloc(1, sizeof(Cli));
     if (p_clients_file == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para p_clients_file.\n");
-        free(p_clients_file);
         exit(0);
     }
 
     Restricoes *p_rest = calloc(1, sizeof(Restricoes));
     if (p_rest == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para p_rest.\n");
-        free(p_rest);
         exit(0);
     }
 
-   /* Sol *p_sol = malloc(sizeof(Sol));
+    Sol *p_sol = malloc(sizeof(Sol));
     if (p_sol == NULL) {
         fprintf(stderr, "Erro: falha ao alocar memória para p_sol.\n");
-        free(p_sol)
         exit(0);
-    }*/
+    }
 
     read_file_map(file_map, N, L,
                   cidade_part, cidade_cheg, automovel, time, cost, first, last, period, p_cidades);
@@ -120,7 +115,8 @@ int main(int argc, char *argv[])
        
         read_file_clients(file_clients, p_clients_file, p_rest);
 
-        dijkstra(p_cidades, p_clients_file, N, cidade_part, cidade_cheg, time, cost);
+        
+        dijkstra(p_cidades, p_clients_file, p_sol, N, time, cost);
 
         /*
         printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
@@ -138,11 +134,13 @@ int main(int argc, char *argv[])
 
         // print_results(FILE *ptr_results_file, p_sol, p_clients_file->id);
     }
+
     fclose(file_clients);
 
     // close results file
-    // fclose(ptr_results_file);
+   // fclose(ptr_results_file);
 
+    free(p_sol);
     free(p_clients_file);
     free(p_rest);
 

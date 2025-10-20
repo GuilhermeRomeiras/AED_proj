@@ -29,14 +29,14 @@ int read_file_clients(FILE *file_clients, Cli* client, Restricoes *rest)
      
         //se houver uma restrição
         case 1: 
-            printf("nesta task apenas há uma restrição \n");
+            //printf("nesta task apenas há uma restrição \n");
 
             function_case(file_clients, rest, client->id);
 
             break;
         //se houver duas restrições
         case 2:
-            printf("nesta task há duas restrições \n");
+            //printf("nesta task há duas restrições \n");
 
             function_case(file_clients, rest, client->id);
             
