@@ -31,11 +31,11 @@ void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
 int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
+int calcular_tempo_total(Sol *Solucao, Cli *cliente, int *time, int *first, int *last, int *period, int dijkstra_id);
 void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao);
 
-
 // Dijkstra adaptado às nossas estruturas
-void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
+void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
               int *time, int *cost)
 {
     int time_cost = 0;
@@ -67,14 +67,13 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
     // Algoritmo principal
 
     while (!PQempty(pq))
-    {   
+    {
         int v = PQdelmin(pq);
-        
+
         if (v == cliente->cidade_destino)
         {
             break;
         }
-        
 
         if (wt[v] != INT_MAX)
         {
@@ -86,71 +85,91 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
                 int w = cidades[v].next_cidade[i];
                 int dijkstra_id = cidades[v].lig_id[i];
 
-                // Escolhe peso: tempo ou custo
-                int peso = time_cost ? time[dijkstra_id] : cost[dijkstra_id];
-
-                
                 // Relaxação
-                if (wt[w] > wt[v] + peso)
+                if (time_cost == 1)
                 {
-                    wt[w] = wt[v] + peso;
+                    if (wt[w] > wt[v] + cost[dijkstra_id])
+                    {
+                        
+                        wt[w] = wt[v] + cost[dijkstra_id];
 
-                    //  printf("wt_v: %i\n", wt[v]);
-                    PQdec(pq, w, wt[w]);
-                    st[w] = v;
-                    
-                    st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
+                        //  printf("wt_v: %i\n", wt[v]);
+                        PQdec(pq, w, wt[w]);
+                        st[w] = v;
+
+                        st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
+                    }
+                }
+
+                else
+                {
+                    time[dijkstra_id] = calcular_tempo_total(Solucao, cliente, time, first, last, period, dijkstra_id);
+                    if (wt[w] > wt[v] + time[dijkstra_id])
+                    {
+                        printf("p: %i ", time[dijkstra_id]);
+                        wt[w] = wt[v] + time[dijkstra_id];
+
+                        //  printf("wt_v: %i\n", wt[v]);
+                        PQdec(pq, w, wt[w]);
+                        st[w] = v;
+
+                        st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
+                    }
                 }
             }
         }
     }
 
     reconstruct_path(st, st_lig, cliente->cidade_origem, cliente->cidade_destino, Solucao);
-    Solucao->custo_total=0;
-    Solucao->tempo_total =0;
-    // Guardar o custo/tempo total
-    if (Solucao->valida == 1) {
+    Solucao->tempo_total = 0;
+    Solucao->custo_total = 0;
 
-        int dest = cliente->cidade_destino;
-        if (cliente->preferencia == 'c') {
-            Solucao->custo_total = wt[dest];
-        }     
-        else {
-            Solucao->tempo_total = wt[dest];
+    // Guardar o custo/tempo total
+    if (Solucao->valida == 1)
+    {
+        // Percorre o caminho e soma AMBOS tempo e custo
+
+        for (int i = 0; i < Solucao->caminho_size; i++)
+        {
+            int sol_id = Solucao->caminho_id[i];
+            Solucao->custo_total += cost[sol_id];
         }
     }
-    
+
     // Libertar memória
     PQfree(pq);
     free(st);
     free(wt);
     free(st_lig);
-
 }
-
+// fim dijkstra
 
 // Função para reconstruir o caminho
-void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao) {
-    
-    int current = destination;  
-    
+void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao)
+{
+
+    int current = destination;
+
     // Verificar se existe caminho
-    if (st[current] == -1 && current != source) {
+    if (st[current] == -1 && current != source)
+    {
         Solucao->valida = 0;
         Solucao->caminho_size = 0;
         Solucao->caminho = NULL;
         return;
     }
-    
+
     // PASSO 1: Contar quantos passos tem o caminho
     int path_length = 0;
     int temp = current;
-    while (temp != source) {
+    while (temp != source)
+    {
         path_length++;
         temp = st[temp];
     }
-    
-    if(path_length == 0) {
+
+    if (path_length == 0)
+    {
         Solucao->valida = 0;
         Solucao->caminho_size = 0;
         return;
@@ -159,20 +178,57 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
     Solucao->caminho = (int *)malloc(path_length * sizeof(int));
     Solucao->caminho_id = (int *)malloc(path_length * sizeof(int));
     Solucao->caminho_size = path_length;
-    current = destination;  
-    
+    current = destination;
+
     // PASSO 3: Preencher de trás para a frente, já invertendo!
     // Começamos a preencher do fim do array (posição path_length-1)
-    // e vamos recuando até à posição 0    
-    for (int i = path_length - 1; i >= 0; i--) {
+    // e vamos recuando até à posição 0
+    for (int i = path_length - 1; i >= 0; i--)
+    {
         Solucao->caminho_id[i] = st_lig[current];
         Solucao->caminho[i] = st[current];
         current = st[current];
     }
-    
+
     Solucao->valida = 1;
 }
 
+// Função para calcular o tempo total da rota considerando periodicidades
+int calcular_tempo_total(Sol *Solucao, Cli *cliente, int *time, int *first, int *last, int *period, int dijkstra_id)
+{
+    int found_con = 0;
+    int tempo_atual = cliente->tempo_inicial; // Hora de partida do cliente
+    int resultado_tempo = 0;
+    // Iterar por cada ligação no caminho
+
+    int sol_id = dijkstra_id; // ID da ligação atual
+    // Começar com a primeira partida do dia
+    int first_period = first[sol_id];
+
+    // Avançar até encontrar uma partida >= tempo_atual
+    while (first_period < tempo_atual)
+    {   
+        first_period += period[sol_id];
+
+        // Se ultrapassou a última partida do dia, vai para o dia seguinte
+        if (first_period > last[sol_id])
+        {
+            first_period = first[sol_id] + 1440;
+        }
+
+        // Calcular hora de chegada desta ligação
+        int hora_chegada = first_period + time[sol_id];
+        
+            if (found_con == 0){
+                resultado_tempo = hora_chegada;
+                found_con=1;
+            }
+            if (hora_chegada < tempo_atual) {
+                resultado_tempo = hora_chegada;
+            }
+    }
+    return resultado_tempo;
+}
 
 PQ *PQinit(int N)
 {
