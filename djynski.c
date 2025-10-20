@@ -70,7 +70,6 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
     {   
         int v = PQdelmin(pq);
         
-        printf("client: %i: %i: %i\n", cliente->id, v + 1, st[v] + 1);
         if (v == cliente->cidade_destino)
         {
             break;
@@ -107,14 +106,15 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N,
     }
 
     reconstruct_path(st, st_lig, cliente->cidade_origem, cliente->cidade_destino, Solucao);
-    
+    Solucao->custo_total=0;
+    Solucao->tempo_total =0;
     // Guardar o custo/tempo total
-    if (Solucao->valida) {
+    if (Solucao->valida == 1) {
+
         int dest = cliente->cidade_destino;
         if (cliente->preferencia == 'c') {
             Solucao->custo_total = wt[dest];
-        } 
-        
+        }     
         else {
             Solucao->tempo_total = wt[dest];
         }
@@ -157,6 +157,7 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
     }
 
     Solucao->caminho = (int *)malloc(path_length * sizeof(int));
+    Solucao->caminho_id = (int *)malloc(path_length * sizeof(int));
     Solucao->caminho_size = path_length;
     current = destination;  
     
@@ -164,7 +165,8 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
     // Começamos a preencher do fim do array (posição path_length-1)
     // e vamos recuando até à posição 0    
     for (int i = path_length - 1; i >= 0; i--) {
-        Solucao->caminho[i] = st_lig[current];
+        Solucao->caminho_id[i] = st_lig[current];
+        Solucao->caminho[i] = st[current];
         current = st[current];
     }
     
