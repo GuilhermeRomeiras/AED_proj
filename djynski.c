@@ -30,7 +30,8 @@ void PQinsert(PQ *pq, int vertex, int priority);
 int PQempty(PQ *pq);
 int PQdelmin(PQ *pq);
 void PQfree(PQ *pq);
-void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao);
+void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao);
+int path_size_calculate(int *st, Cli *cliente, Sol *Solucao);
 
 // Calculate next available departure time from tempo_atual
 int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
@@ -178,8 +179,12 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
     }
 
     // Reconstruct path
-    reconstruct_path(st, st_lig, cliente->cidade_origem, cliente->cidade_destino, Solucao);
-    
+    int path_length =path_size_calculate(st, cliente, Solucao);
+    Solucao->caminho_size = path_length;
+    Solucao->caminho = (int *)malloc(path_length * sizeof(int));
+    Solucao->caminho_id = (int *)malloc(path_length * sizeof(int));
+    reconstruct_path(st, st_lig, cliente, Solucao);
+
     // Calculate actual time and cost totals
     if (Solucao->valida == 1 && Solucao->caminho_size > 0)
     {
@@ -217,23 +222,57 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
     free(st_lig);
 }
 
-void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao)
-{   
-    int current = destination;
+void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao){
 
+    if (!Solucao->caminho || !Solucao->caminho_id) {
+            Solucao->valida = 0;
+            Solucao->caminho_size = 0;
+    return;
+    }
+    
+    int current = cliente->cidade_destino;
+
+        // Build path arrays backwards
+        // We need to store intermediate cities (not source, not destination)
+        // and the connection IDs used
+    for (int i = Solucao->caminho_size - 1; i >= 0; i--){
+
+        if (st_lig[current] == -1 || st[current] == -1) {
+            Solucao->valida = 0;
+            Solucao->caminho_size = 0;
+            return;
+        }
+            
+        // Store the connection ID used to reach 'current'
+        Solucao->caminho_id[i] = st_lig[current];
+        printf("stlig:%i\n", st_lig[current]);
+        // Store the previous city (intermediate city in path)
+        Solucao->caminho[i] = st[current];
+            
+        // Move to previous city
+        current = st[current];
+        }
+
+    Solucao->valida = 1;
+
+}
+
+int path_size_calculate(int *st, Cli *cliente, Sol *Solucao){
+
+    int current = cliente->cidade_destino;
+    int source = cliente->cidade_origem;
+    
     // Check if path exists
-    if (st[current] == -1 && current != source)
-    {
+    if (st[current] == -1 && current != source){
         Solucao->valida = 0;
         Solucao->caminho_size = 0;
-        return;
+        return 0;
     }
 
     // Count path length (number of edges/connections)
     int path_length = 0;
     int temp = current;
-    while (temp != source && st[temp] != -1)
-    {
+    while (temp != source && st[temp] != -1){
         path_length++;
         temp = st[temp];
         
@@ -241,51 +280,18 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
         if (path_length > 10000) {
             Solucao->valida = 0;
             Solucao->caminho_size = 0;
-            return;
+            return 0;
         }
     }
 
-    if (path_length == 0)
-    {
+    if (path_length == 0){
         Solucao->valida = 0;
         Solucao->caminho_size = 0;
-        return;
+        return 0;
     }
 
-    Solucao->caminho = (int *)malloc(path_length * sizeof(int));
-    Solucao->caminho_id = (int *)malloc(path_length * sizeof(int));
-    
-    if (!Solucao->caminho || !Solucao->caminho_id) {
-        Solucao->valida = 0;
-        Solucao->caminho_size = 0;
-        return;
-    }
-    
-    Solucao->caminho_size = path_length;
-    current = destination;
+    return path_length;
 
-
-    // Build path arrays backwards
-    // We need to store intermediate cities (not source, not destination)
-    // and the connection IDs used
-    for (int i = path_length - 1; i >= 0; i--)
-    {
-        if (st_lig[current] == -1 || st[current] == -1) {
-            Solucao->valida = 0;
-            Solucao->caminho_size = 0;
-            return;
-        }
-        
-        // Store the connection ID used to reach 'current'
-        Solucao->caminho_id[i] = st_lig[current];
-        // Store the previous city (intermediate city in path)
-        Solucao->caminho[i] = st[current];
-        
-        // Move to previous city
-        current = st[current];
-    }
-
-    Solucao->valida = 1;
 }
 
 PQ *PQinit(int N)
