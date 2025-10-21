@@ -16,7 +16,7 @@ if(Solucao->valida == 1){
     }
     else
     {
-        fprintf(ptr_results_file, "%i -1", cliente->id);
+        fprintf(ptr_results_file, "%i -1\n", cliente->id);
     }
     
     

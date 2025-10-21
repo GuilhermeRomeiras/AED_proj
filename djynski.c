@@ -38,6 +38,11 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
 void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
               int *time, int *cost)
 {
+       if (cliente->cidade_origem < 0||cliente->cidade_destino < 0) {
+        Solucao->valida = 0;
+        return;
+    }
+
     int time_cost = 0;
 
     switch (cliente->preferencia)
@@ -60,12 +65,13 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
         st[v] = -1;
         wt[v] = INT_MAX;
         PQinsert(pq, v, INT_MAX);
+        
     }
-
+    
+    
     wt[source] = 0;
     PQdec(pq, source, 0);
     // Algoritmo principal
-
     while (!PQempty(pq))
     {
         int v = PQdelmin(pq);
@@ -76,7 +82,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
         }
 
         if (wt[v] != INT_MAX)
-        {
+        {   
 
             // Percorre as adjacências de v
             for (int i = 0; i < cidades[v].num_lig; i++)
@@ -102,17 +108,17 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
                 }
 
                 else
-                {
-                    time[dijkstra_id] = calcular_tempo_total(Solucao, cliente, time, first, last, period, dijkstra_id);
+                {   
+                    
+                     
                     if (wt[w] > wt[v] + time[dijkstra_id])
                     {
-                        printf("p: %i ", time[dijkstra_id]);
-                        wt[w] = wt[v] + time[dijkstra_id];
-
-                        //  printf("wt_v: %i\n", wt[v]);
+                        int tempo_lig = calcular_tempo_total(Solucao, cliente, time, first, last, period, dijkstra_id);
+                        wt[w] = wt[v] + tempo_lig;
+                        Solucao->tempo_total += tempo_lig; 
+                         printf("wt_v: %i\n", wt[v]);
                         PQdec(pq, w, wt[w]);
                         st[w] = v;
-
                         st_lig[w] = cidades[v].lig_id[i]; // para sabermos o id das ligacoes e acedermos a memoria instantaneamente sem ter de fazer mais varrimentos
                     }
                 }
@@ -130,7 +136,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
         // Percorre o caminho e soma AMBOS tempo e custo
 
         for (int i = 0; i < Solucao->caminho_size; i++)
-        {
+        {   Solucao->tempo_total += calcular_tempo_total (Solucao, cliente, time, first, last, period, i);
             int sol_id = Solucao->caminho_id[i];
             Solucao->custo_total += cost[sol_id];
         }

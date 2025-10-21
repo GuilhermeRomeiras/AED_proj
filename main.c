@@ -34,14 +34,14 @@ int main(int argc, char *argv[])
         perror(filename_clients);
         exit(0);
     }
-    char *create_results_filename(char * filename_clients);
+    char *results_filename = create_results_filename(filename_clients);
 
-    /* FILE* ptr_results_file = fopen(create_results_filename(filename_clients), "w");
+     FILE* ptr_results_file = fopen(results_filename, "w");
      if (!ptr_results_file)
      {
-         perror(create_results_filename(filename_clients));
+         perror(results_filename);
          exit(0);
-     }*/
+     }
 
     // printf("File opened successfully!\n");
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
         read_file_clients(file_clients, p_clients_file, p_rest);
 
         
-        dijkstra(p_cidades, p_clients_file, p_sol, N, time, cost);
+        dijkstra(p_cidades, p_clients_file, p_sol, N, first, last, period, time, cost);
 
         /*
         printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
@@ -132,22 +132,21 @@ int main(int argc, char *argv[])
            p_rest->max_tempo_ligacao, p_rest->max_custo_ligacao,
            p_rest->max_tempo_total, p_rest->max_custo_total);*/
 
-        //print_results(ptr_results_file, p_sol, p_clients_file->id);
-        if (p_sol->caminho != NULL) {
-        free(p_sol->caminho);
-        p_sol->caminho = NULL;
-        }
+
+       print_results(ptr_results_file, p_sol, automovel, p_clients_file);
+
+        
     }
 
     fclose(file_clients);
 
     // close results file
-  // fclose(ptr_results_file);
+   fclose(ptr_results_file);
 
     free(p_sol);
     free(p_clients_file);
     free(p_rest);
-   // free(ptr_results_file);
+    free(results_filename);
     
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
