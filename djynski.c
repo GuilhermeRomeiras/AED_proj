@@ -43,7 +43,7 @@ int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
     
     // If we're past the last departure, go to next day
     if (tempo_atual > last) {
-        return first + 1440;
+       return first + 1440;
     }
     
     // Find next departure within today's schedule
@@ -71,7 +71,6 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
     Solucao->caminho = NULL;
     Solucao-> caminho_id = NULL;
 
-    printf("N:%i Co:%i cd:%i \n", N, cliente->cidade_origem, cliente->cidade_destino);
     if (cliente->cidade_origem < 0 || cliente->cidade_destino < 0 || cliente->cidade_origem > N -1 || cliente->cidade_destino > N - 1) {
         return;
     }
@@ -93,7 +92,6 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
     int source = cliente->cidade_origem;
     int *st = malloc(N * sizeof(int));
     int *wt = malloc(N * sizeof(int));
-    int *tempo_chegada = malloc(N * sizeof(int));  // Track actual arrival times
     int *st_lig = malloc(N * sizeof(int));
 
 
@@ -105,12 +103,11 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
         st[v] = -1;
         st_lig[v] = -1;  // Initialize to -1
         wt[v] = INT_MAX;
-        tempo_chegada[v] = INT_MAX;
         PQinsert(pq, v, INT_MAX);
     }
     
     wt[source] = 0;
-    tempo_chegada[source] = cliente->tempo_inicial;
+    int tempo_chegada = cliente->tempo_inicial;
     PQdec(pq, source, 0);
     
     // Main algorithm
@@ -136,7 +133,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
                     int custo_lig = cost[dijkstra_id];
                     
                     // For cost minimization, we still need to track time for scheduling
-                    int partida = calcular_proxima_partida(tempo_chegada[v], 
+                    int partida = calcular_proxima_partida(tempo_chegada, 
                                                            first[dijkstra_id], 
                                                            last[dijkstra_id], 
                                                            period[dijkstra_id]);
@@ -145,7 +142,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
                     if (wt[w] > wt[v] + custo_lig)
                     {
                         wt[w] = wt[v] + custo_lig;
-                        tempo_chegada[w] = chegada;
+                        tempo_chegada = chegada;
                         PQdec(pq, w, wt[w]);
                         st[w] = v;
                         st_lig[w] = dijkstra_id;
@@ -154,7 +151,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
                 else  // Minimize TIME
                 {   
                     // Calculate next available departure from current city
-                    int partida = calcular_proxima_partida(tempo_chegada[v], 
+                    int partida = calcular_proxima_partida(tempo_chegada, 
                                                            first[dijkstra_id], 
                                                            last[dijkstra_id], 
                                                            period[dijkstra_id]);
@@ -168,7 +165,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
                     if (wt[w] > tempo_total)
                     {
                         wt[w] = tempo_total;
-                        tempo_chegada[w] = chegada;
+                        tempo_chegada = chegada;
                         PQdec(pq, w, wt[w]);
                         st[w] = v;
                         st_lig[w] = dijkstra_id;
@@ -245,7 +242,6 @@ void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao){
             
         // Store the connection ID used to reach 'current'
         Solucao->caminho_id[i] = st_lig[current];
-        printf("stlig:%i\n", st_lig[current]);
         // Store the previous city (intermediate city in path)
         Solucao->caminho[i] = st[current];
             
