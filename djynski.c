@@ -67,8 +67,11 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
     Solucao->caminho_size = 0;
     Solucao->tempo_total = 0;
     Solucao->custo_total = 0;
+    Solucao->caminho = NULL;
+    Solucao-> caminho_id = NULL;
 
-    if (cliente->cidade_origem < 0 || cliente->cidade_destino < 0) {
+    printf("N:%i Co:%i cd:%i \n", N, cliente->cidade_origem, cliente->cidade_destino);
+    if (cliente->cidade_origem < 0 || cliente->cidade_destino < 0 || cliente->cidade_origem > N -1 || cliente->cidade_destino > N - 1) {
         return;
     }
 
@@ -215,7 +218,7 @@ void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *
 }
 
 void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *Solucao)
-{   printf("d:%i", destination);
+{   
     int current = destination;
 
     // Check if path exists
@@ -260,7 +263,6 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
     
     Solucao->caminho_size = path_length;
     current = destination;
-    printf("\ncurrent:%i\n", current);
 
 
     // Build path arrays backwards
@@ -276,7 +278,6 @@ void reconstruct_path(int *st, int *st_lig, int source, int destination, Sol *So
         
         // Store the connection ID used to reach 'current'
         Solucao->caminho_id[i] = st_lig[current];
-        printf("stlig:%i\n", st_lig[current]);
         // Store the previous city (intermediate city in path)
         Solucao->caminho[i] = st[current];
         
