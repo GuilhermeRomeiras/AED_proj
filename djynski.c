@@ -107,7 +107,7 @@ int dijkstra(const adj *cidades, Cli client, int N, const int *first, const int 
             (*nodes)[city_idx].city_idx = city_idx;
 
 
-            if ((*nodes)[city_idx].visited || automoveis[lig_idx] == rest.meio_proibido || costs[lig_idx] == rest.max_tempo_ligacao || times[lig_idx] == rest.max_tempo_ligacao) {
+            if ((*nodes)[city_idx].visited || automoveis[lig_idx] == rest.meio_proibido || costs[lig_idx] > rest.max_custo_ligacao || times[lig_idx] > rest.max_tempo_ligacao) {
                 continue;
             }
 
