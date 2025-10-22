@@ -11,31 +11,7 @@ typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
 
-typedef struct _item {
-    int vertex;
-    int priority;
-    struct _item *from;
-} Item;
 
-typedef struct {
-    Item *queue;
-    int capacity;
-    int n;
-} PQ;
-
-PQ *PQinit(int N);
-void PQdec(PQ *pq, int vertex, int new_priority);
-void PQinsert(PQ *pq, int vertex, int priority);
-int PQempty(PQ *pq);
-int PQdelmin(PQ *pq);
-void PQfree(PQ *pq);
-void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao);
-int path_size_calculate(int *st, Cli *cliente, Sol *Solucao);
-
-#if 0
-
-
-#else
 
 int calcular_proxima_partida(int current_time, int first, int last, int period) {
     int day = current_time / 1440;
@@ -63,14 +39,6 @@ int calcular_proxima_partida(int current_time, int first, int last, int period) 
     return (day + 1) * 1440 + first;
 }
 
-#endif
-
-
-struct wargs {
-    int arrival_time, first, last, period, time;
-    int cost;
-    int dcost;
-};
 
 int get_weight_time(void *wargs) {
     struct wargs *w = wargs;

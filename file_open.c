@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "header.h" // Para ter acesso às declarações
+#include "header.h"
 
 // funcao inicial que abre o ficheiro e armazena os dados em arrays que caracterizam, cada um, uma coluna do ficheiro .map
 int read_file_map(FILE *file_map, int N, int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period, adj *cidades){
