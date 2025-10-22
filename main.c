@@ -5,15 +5,13 @@
 
 #include "header.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
+
     int N = 0, L = 0;
 
     // verificar os comandos do terminal
-    if (argc != 3)
-    {
-        // fprintf(stderr, "argument count is wrong\n");
-        exit(0);
+    if (argc != 3){
+        return 0;
     }
 
     char *filename_map = argv[1];
@@ -22,10 +20,9 @@ int main(int argc, char *argv[])
     // pointer para o ficheiro a ser aberto
     FILE *file_map = fopen(filename_map, "r");
 
-    if (!file_map)
-    {   
+    if (!file_map){   
         perror(filename_map);
-        exit(0);
+        return 0;
     }
 
     FILE *file_clients = fopen(filename_clients, "r");
@@ -33,26 +30,21 @@ int main(int argc, char *argv[])
     {   
         fclose(file_map);
         perror(filename_clients);
-        exit(0);
+        return 0;
     }
     char *results_filename = create_results_filename(filename_clients);
 
      FILE* ptr_results_file = fopen(results_filename, "w");
-     if (!ptr_results_file)
-     {
+     if (!ptr_results_file){
          perror(results_filename);
-         exit(0);
-     }
-
-    // printf("File opened successfully!\n");
+         return 0;
+    }
 
     // o fscanf para extrair o cabecalho
-    if (fscanf(file_map, "%d %d", &N, &L) != 2)
-    {
-        // printf("Header error\n");
+    if (fscanf(file_map, "%d %d", &N, &L) != 2){
         fclose(file_clients);
         fclose(file_map);
-        exit(0);
+        return 0;
     }
 
     // armazenamento dinamico dos arrays map
@@ -66,15 +58,13 @@ int main(int argc, char *argv[])
     int *period = malloc(L * sizeof(int));      // coluna 8
 
     if (cidade_part == NULL || cidade_cheg == NULL || automovel == NULL ||
-    time == NULL || cost == NULL || first == NULL || last == NULL || period == NULL)
-    {
-        exit(0);
+    time == NULL || cost == NULL || first == NULL || last == NULL || period == NULL){
+        return 0;
     }
 
     adj *p_cidades = malloc((N+1) * sizeof(adj));
     if (p_cidades == NULL) {
-        fprintf(stderr, "Erro: falha ao alocar memória para p_cidades.\n");
-        exit(0);
+        return 0;
     }
 
     Cli        p_clients_file = {0};
@@ -84,19 +74,13 @@ int main(int argc, char *argv[])
     read_file_map(file_map, N, L,
                   cidade_part, cidade_cheg, automovel, time, cost, first, last, period, p_cidades);
 
-    // print_arrays();
-
-    //print_city(N, p_cidades);
-
 
     int total_clients;
-    if (fscanf(file_clients, "%d", &total_clients) != 1)
-        {
-            exit(0);
+    if (fscanf(file_clients, "%d", &total_clients) != 1){
+            return 0;
         }
 
-    for (int i = 1; i <= total_clients; i++)
-    {  
+    for (int i = 1; i <= total_clients; i++){  
 
         p_rest.max_custo_ligacao = INT_MAX;
         p_rest.max_custo_total   = INT_MAX;
@@ -114,44 +98,29 @@ int main(int argc, char *argv[])
             nodes = calloc(N, sizeof(*nodes));
             if (!nodes) {
                 // TODO: free everything
-                return -1;
+                return 0;
             }
 
             if (p_clients_file.preferencia == 'c')
-                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, automovel, &get_weight_cost, &nodes, p_rest);
+                err = dijkstra(p_cidades, p_clients_file, N, first, last, period, time, cost, automovel, &get_weight_cost, &nodes, p_rest);
 
             else if (p_clients_file.preferencia == 't')
-                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, automovel, &get_weight_time, &nodes, p_rest);
+                err = dijkstra(p_cidades, p_clients_file, N, first, last, period, time, cost, automovel, &get_weight_time, &nodes, p_rest);
 
         } else err = 1;
 
-        printf("dijkstra returned %d\n", err);
-
-        /*
-           printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
-           p_clients_file->id, p_clients_file->cidade_origem, p_clients_file->cidade_destino, p_clients_file->tempo_inicial, p_clients_file->preferencia, p_clients_file->num_restricoes);
-
-           printf("Restricoes:\n"
-           "  meio_proibido = %d\n"
-           "  max_tempo_ligacao = %d\n"
-           "  max_custo_ligacao = %d\n"
-           "  max_tempo_total = %d\n"
-           "  max_custo_total = %d\n",
-           p_rest->meio_proibido,
-           p_rest->max_tempo_ligacao, p_rest->max_custo_ligacao,
-           p_rest->max_tempo_total, p_rest->max_custo_total);*/
 
 
         Node *solution = NULL;
         int n_nodes = 0;
         if (!err) {
             n_nodes = nodes[p_clients_file.cidade_destino].n_edges+1;
-            printf("getting solution.. (%d nodes)\n", n_nodes);
             solution = malloc(n_nodes*sizeof(*solution));
             if (!solution) {
-                // TODO: free
-                perror("malloc()");
-                return -1;
+                free(nodes);
+                free(p_sol.caminho_id);
+                free(p_sol.caminho);
+                return 0;
             }
 
             Node *cur = nodes+p_clients_file.cidade_destino;
@@ -160,9 +129,6 @@ int main(int argc, char *argv[])
                 cur = cur->from;
             }
 
-            for (int i = 0; i < n_nodes; i++) {
-                print_node(solution[i]);
-            }
         }
 
         print_results(ptr_results_file, solution, n_nodes, automovel, p_clients_file);
@@ -177,17 +143,13 @@ int main(int argc, char *argv[])
     fclose(file_clients);
 
     // close results file
-   fclose(ptr_results_file);
-
+    fclose(ptr_results_file);
     free(results_filename);
     
 
     // Libertar toda a memoria dos arrays no fim da execucao do programa
     free_vectors_map(cidade_part, cidade_cheg, automovel, time, cost, first, last, period);
-
-    //  free_vectors_quests(task, cidade1, cidade2, tempo_inicial, result);
     free_cidades(N, p_cidades);
-    // free(results_filename);
 
     return 0;
 }

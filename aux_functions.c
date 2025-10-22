@@ -45,45 +45,6 @@ int nodes(int ntmp_cp, int ntmp_cc, int con_atual, adj *cidades) {
 }
 
 
-// Funcao auxiliar para imprimir a rede de cidades
-void print_city (int N, adj *cidades) {
-    printf("N: %i \n", N);
-    printf("\n=== city Data ===\n");
-   
-    for (int i = 1; i <= N; i++) {
-        printf("City %d:\n", i);
-        for (int j = 0; j < cidades[i].num_lig; j++)
-        {         
-                 printf("  next city: %d  lig_id: %d\n",
-                   cidades[i].next_cidade[j], cidades[i].lig_id[j]);
-        }
-        printf("\n");
-        printf("  num_lig: %d\n", cidades[i].num_lig);
-        printf(" capacidade: %d\n\n", cidades[i].capacidade);
-    }
-}
-
-// Funcao auxiliar para imprimir os dados dos arrays
-void print_arrays (int L, int *cidade_part, int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period) {
-
-    printf("\n=== Array Data ===\n");
-    for (int i = 0; i < L; i++) {
-        const char *mode_str = Enum_int_to_str(automovel[i]);
-
-        printf("Connection %d:\n", i+1);
-        printf("  cidade_part: %d\n", cidade_part[i]);
-        printf("  cidade_cheg: %d\n", cidade_cheg[i]);
-        printf("  automovel: %s (%d)\n", mode_str, automovel[i]);
-        printf("  time: %d\n", time[i]);
-        printf("  cost: %d\n", cost[i]);
-        printf("  first: %d\n", first[i]);
-        printf("  last: %d\n", last[i]);
-        printf("  period: %d\n\n", period[i]);
-    }
-
-}
-
-
 // Funcao que transforma a string do ficheiro em inteiro para melhor manipulacao
 int Enum_str_to_int(const char *str){
     
@@ -145,25 +106,6 @@ void free_vectors_map(int *cidade_part, int *cidade_cheg, int *automovel, int *t
 }
 
 
-
-// free dos dados armazenados do ficheiro quests
-void free_vectors_quests(int *task, int *cidade1, int *cidade2, int *tempo_inicial, int *result) {
-
-    free(task);
-        task = NULL;
-
-    free(cidade1); 
-        cidade1 = NULL; 
-
-    free(cidade2);
-       cidade2 = NULL; 
-
-    free(tempo_inicial);
-        tempo_inicial = NULL; 
-    free(result);
-        result = NULL;
-
-}
 
 void free_cidades(int N, adj *cidades) {
 

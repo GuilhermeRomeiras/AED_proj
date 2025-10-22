@@ -15,18 +15,15 @@ const char* dot_pos = strrchr(filename_clients, '.');
 
 // Verificar se encontrou o '.'
 if (dot_pos == NULL) {
-    //printf("Erro: ficheiro sem extensão\n");
     exit(0);
 }
 
-//printf("\n ok %s \n %s /n", dot_pos, filename_quests);
 size_t prefix_length = dot_pos - filename_clients;
 
 // Criar nome do ficheiro .results
 char* results_filename = malloc(prefix_length + 5);
 
 if (results_filename == NULL) {
-   // printf("Erro: sem memória\n");
     perror("malloc");
     exit(0);
 }
@@ -36,8 +33,7 @@ results_filename[prefix_length] = '\0';
 strcat(results_filename, ".sol");
 
 return results_filename;
+
 }
-
-
 
 #endif

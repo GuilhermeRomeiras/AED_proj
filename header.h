@@ -66,14 +66,14 @@ int read_file_map(FILE *file_map, int N, int L,
      int *cidade_part,int *cidade_cheg, int *automovel, int *time, int *cost, int *first, int *last, int *period, adj *cidades);
 int read_file_clients(FILE *file_clients, Cli* p_clients_file, Restricoes *Restricoes);
 
-void function_case(FILE *file_clients, Restricoes *rest, int client_id);
+void function_case(FILE *file_clients, Restricoes *rest);
 
 // void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
 //               int *time, int *cost);
 //
 // int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *period,
 //               const int *time, const int *cost, const int *weight);
-int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *periods,
+int dijkstra(const adj *cidades, Cli client, int N, const int *first, const int *last, const int *periods,
               const int *times, const int *costs, const int *automoveis, int (get_weight)(void*), Node **nodes, Restricoes rest);
 
 int get_weight_time(void *);

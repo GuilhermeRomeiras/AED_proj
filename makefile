@@ -1,4 +1,4 @@
-CFLAGS := --std=c99 -Wall -Wextra -Wpedantic -Wno-unused-parameter
+CFLAGS := --std=c99 -Wall -Wextra -Wpedantic
 #CFLAGS := -Wall -std=c99
 
 ifdef DEBUG
@@ -7,7 +7,7 @@ else
 	CFLAGS += -O3
 endif
 
-SRC := main.c task_functions.c aux_functions.c file_open.c create_file_results.c clients_file.c switch_case_func.c djynski.c file_results.c
+SRC := main.c aux_functions.c file_open.c create_file_results.c clients_file.c switch_case_func.c djynski.c file_results.c
 OBJ := ${SRC:%.c=build/%.o}
 
 INC := header.h

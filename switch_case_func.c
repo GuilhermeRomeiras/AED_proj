@@ -3,7 +3,7 @@
 
 #include "header.h" // Para ter acesso às declarações
 
-void function_case(FILE *file_clients, Restricoes *rest, int client_id)
+void function_case(FILE *file_clients, Restricoes *rest)
 {
     char type_restriction;
     int value_rest;
@@ -62,7 +62,6 @@ void function_case(FILE *file_clients, Restricoes *rest, int client_id)
         break;
 
     default:
-        printf("Data format error on line %d\n", client_id + 1);
         break;
     }
 }
