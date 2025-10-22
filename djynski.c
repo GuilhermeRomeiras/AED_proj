@@ -33,32 +33,30 @@ void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao);
 int path_size_calculate(int *st, Cli *cliente, Sol *Solucao);
 
 // Calculate next available departure time from tempo_atual
-int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
-{
+int calcular_proxima_partida(int current_time, int first, int last, int period) {
+    int day = current_time / 1440;
+    int time_in_day = current_time % 1440;
 
-    // If we can catch the first departure
-    if (tempo_atual <= first) {
-        return first;
-    }
-    
-    // If we're past the last departure, go to next day
-    if (tempo_atual > last) {
-       return first + 1440;
-    }
-    
-    // Find next departure within today's schedule
-    int next_departure = first;
-    while (next_departure < tempo_atual) {
-        next_departure += period;
-    }
-    
+    // Try to find the next departure in the current day
+    if (time_in_day <= last) {
+        // Calculate the first possible departure >= current_time
+        int first_departure_today = day * 1440 + first;
 
-    // If we went past last departure, go to next day
-    if (next_departure > last) {
-        return first + 1440;
+        if (time_in_day <= first) {
+            return first_departure_today;
+        }
+
+        // Calculate the offset from first departure
+        int periods_since_first = (time_in_day - first + period - 1) / period; // ceil
+        int next_departure_in_day = first + periods_since_first * period;
+
+        if (next_departure_in_day <= last) {
+            return day * 1440 + next_departure_in_day;
+        }
     }
-    
-    return next_departure;
+
+    // If no valid departure today, return the first departure of the next day
+    return (day + 1) * 1440 + first;
 }
 
 
@@ -182,7 +180,7 @@ int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *fir
 
             (*nodes)[city_idx].cost = cur->cost+costs[lig_idx];
             int prox = calcular_proxima_partida(cur->arrival_time, first[lig_idx], last[lig_idx], periods[lig_idx]);
-            (*nodes)[city_idx].arrival_time = times[lig_idx]+calcular_proxima_partida(cur->arrival_time, first[lig_idx], last[lig_idx], periods[lig_idx]);
+            (*nodes)[city_idx].arrival_time = prox + times[lig_idx];
             //printf("==== city %d ====\n", city_idx);
             //printf("arrived at %d\n", cur->arrival_time);
             //printf("next departure at %d\n", prox);
@@ -224,142 +222,6 @@ int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *fir
 
     free(q);
     return -1;
-}
-
-void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao){
-
-    if (!Solucao->caminho || !Solucao->caminho_id) {
-            Solucao->valida = 0;
-            Solucao->caminho_size = 0;
-    return;
-    }
-    
-    int current = cliente->cidade_destino;
-
-        // Build path arrays backwards
-        // We need to store intermediate cities (not source, not destination)
-        // and the connection IDs used
-    for (int i = Solucao->caminho_size - 1; i >= 0; i--){
-
-        if (st_lig[current] == -1 || st[current] == -1) {
-            Solucao->valida = 0;
-            Solucao->caminho_size = 0;
-            return;
-        }
-            
-        // Store the connection ID used to reach 'current'
-        Solucao->caminho_id[i] = st_lig[current];
-        // Store the previous city (intermediate city in path)
-        Solucao->caminho[i] = st[current];
-            
-        // Move to previous city
-        current = st[current];
-        }
-
-    Solucao->valida = 1;
-
-}
-
-int path_size_calculate(int *st, Cli *cliente, Sol *Solucao){
-
-    int current = cliente->cidade_destino;
-    int source = cliente->cidade_origem;
-    
-    // Check if path exists
-    if (st[current] == -1 && current != source){
-        Solucao->valida = 0;
-        Solucao->caminho_size = 0;
-        return 0;
-    }
-
-    // Count path length (number of edges/connections)
-    int path_length = 0;
-    int temp = current;
-    while (temp != source && st[temp] != -1){
-        path_length++;
-        temp = st[temp];
-        
-        // Prevent infinite loop
-        if (path_length > 10000) {
-            Solucao->valida = 0;
-            Solucao->caminho_size = 0;
-            return 0;
-        }
-    }
-
-    if (path_length == 0){
-        Solucao->valida = 0;
-        Solucao->caminho_size = 0;
-        return 0;
-    }
-
-    return path_length;
-
-}
-
-PQ *PQinit(int N)
-{
-    PQ *pq = malloc(sizeof(PQ));
-    if (!pq)
-    {
-        exit(0);
-    }
-    pq->queue = malloc(N * sizeof(Item));
-    if (!pq->queue)
-    {
-        free(pq);
-        exit(0);
-    }
-    pq->capacity = N;
-    pq->n = 0;
-    return pq;
-}
-
-void PQfree(PQ *pq)
-{
-    free(pq->queue);
-    free(pq);
-}
-
-BOOL PQempty(PQ *pq)
-{
-    return pq->n == 0 ? TRUE : FALSE;
-}
-
-void PQinsert(PQ *pq, int vertex, int priority)
-{
-    pq->queue[pq->n].vertex = vertex;
-    pq->queue[pq->n].priority = priority;
-    pq->n++;
-}
-
-int PQdelmin(PQ *pq)
-{
-    int i, min_idx = 0;
-
-    for (i = 1; i < pq->n; i++)
-    {
-        if (pq->queue[i].priority < pq->queue[min_idx].priority)
-            min_idx = i;
-    }
-
-    int min_vertex = pq->queue[min_idx].vertex;
-    pq->queue[min_idx] = pq->queue[pq->n - 1];
-    pq->n--;
-
-    return min_vertex;
-}
-
-void PQdec(PQ *pq, int vertex, int new_priority)
-{
-    for (int i = 0; i < pq->n; i++)
-    {
-        if (pq->queue[i].vertex == vertex)
-        {
-            pq->queue[i].priority = new_priority;
-            return;
-        }
-    }
 }
 
 #endif
