@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "header.h"
 
@@ -97,7 +98,12 @@ int main(int argc, char *argv[])
     for (int i = 1; i <= total_clients; i++)
     {  
 
-        p_rest = (Restricoes) {0};
+        p_rest.max_custo_ligacao = INT_MAX;
+        p_rest.max_custo_total   = INT_MAX;
+        p_rest.max_tempo_ligacao = INT_MAX;
+        p_rest.max_tempo_total   = INT_MAX;
+        p_rest.meio_proibido     = INT_MAX;
+
         read_file_clients(file_clients, &p_clients_file, &p_rest);
 
         int err = 0;
@@ -112,10 +118,10 @@ int main(int argc, char *argv[])
             }
 
             if (p_clients_file.preferencia == 'c')
-                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, &get_weight_cost, &nodes);
+                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, automovel, &get_weight_cost, &nodes, p_rest);
 
             else if (p_clients_file.preferencia == 't')
-                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, &get_weight_time, &nodes);
+                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, automovel, &get_weight_time, &nodes, p_rest);
 
         } else err = 1;
 

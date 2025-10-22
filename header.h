@@ -74,7 +74,7 @@ void function_case(FILE *file_clients, Restricoes *rest, int client_id);
 // int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *period,
 //               const int *time, const int *cost, const int *weight);
 int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *periods,
-              const int *times, const int *costs, int (get_weight)(void*), Node **nodes);
+              const int *times, const int *costs, const int *automoveis, int (get_weight)(void*), Node **nodes, Restricoes rest);
 
 int get_weight_time(void *);
 int get_weight_cost(void *);
