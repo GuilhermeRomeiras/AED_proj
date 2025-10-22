@@ -50,17 +50,18 @@ int get_weight_cost(void *wargs) {
     return w->cost+w->dcost;
 }
 
-int sortq(const void *node1, const void *node2) {
-    Node n1 = **(Node**)node1;
-    Node n2 = **(Node**)node2;
-
-    return n1.weight - n2.weight;
+int find_min_q(Node **q, int n) {
+    int min_idx = 0;
+    for (int i = 0; i < n; i++) {
+        min_idx = q[i]->weight < q[min_idx]->weight ? i : min_idx;
+    }
+    return min_idx;
 }
 
 int dijkstra(const adj *cidades, Cli client, int N, const int *first, const int *last, const int *periods,
               const int *times, const int *costs, const int *automoveis, int (get_weight)(void*), Node **nodes, Restricoes rest){
 
-    int q_capacity = 1;
+    int q_capacity = 1024;
     int n = 0;
 
     for (int i = 0; i < N; i++) {
@@ -85,9 +86,10 @@ int dijkstra(const adj *cidades, Cli client, int N, const int *first, const int 
     while(n>0) {
 
         // retirar da PQ o com maior prioridade
-        Node *cur = q[0];
+        int min_idx = find_min_q(q, n);
+        Node *cur = q[min_idx];
         cur->visited = 1;
-        q[0] = q[n-1];
+        q[min_idx] = q[n-1];
         n--;
 
         int delta_time = cur->arrival_time-client.tempo_inicial;
@@ -136,8 +138,6 @@ int dijkstra(const adj *cidades, Cli client, int N, const int *first, const int 
             q[n] = *nodes+city_idx;
             n++;
         }
-
-        qsort(q, n, sizeof(*q), &sortq);
 
     }
 
