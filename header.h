@@ -45,6 +45,18 @@ typedef struct Solucao {
     int custo_total;
 } Sol;
 
+typedef struct _node {
+    int weight;       // total from start
+    int arrival_time; // arrival time at node
+    int cost;         // total from start
+    int city_idx;
+    int visited;
+    int n_edges;      // total from start
+    int lig_id;
+
+    struct _node *from;
+
+} Node;
 
 enum {invalid_transport, COMBOIO, BARCO, AUTOCARRO, AVIAO};
 
@@ -56,10 +68,20 @@ int read_file_clients(FILE *file_clients, Cli* p_clients_file, Restricoes *Restr
 
 void function_case(FILE *file_clients, Restricoes *rest, int client_id);
 
-void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
-              int *time, int *cost);
+// void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
+//               int *time, int *cost);
+//
+// int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *period,
+//               const int *time, const int *cost, const int *weight);
+int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *periods,
+              const int *times, const int *costs, int (get_weight)(void*), Node **nodes);
 
-void print_results(FILE *ptr_results_file, Sol *Solucao, int *automovel, Cli *cliente);
+int get_weight_time(void *);
+int get_weight_cost(void *);
+
+// void print_results(FILE *ptr_results_file, Sol *Solucao, int *automovel, Cli *cliente);
+void print_results(FILE *ptr_results_file, Node *solution, int n_nodes, int *automovel, Cli cliente);
+void print_node(Node n);
 
 void task1_func(int con_atual, int N, int L,  int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);
 void task2e3_func(int con_atual, int * compare, int N, int L, int *cidade1,  int *cidade2, int *cidade_part,  int *cidade_cheg,  int *result);

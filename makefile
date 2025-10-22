@@ -1,4 +1,4 @@
-CFLAGS := --std=c99 -Wall -Wextra -Wpedantic
+CFLAGS := --std=c99 -Wall -Wextra -Wpedantic -Wno-unused-parameter
 #CFLAGS := -Wall -std=c99
 
 ifdef DEBUG

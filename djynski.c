@@ -11,17 +11,16 @@ typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
 
-typedef struct
-{
+typedef struct _item {
     int vertex;
     int priority;
+    struct _item *from;
 } Item;
 
-typedef struct
-{
+typedef struct {
     Item *queue;
-    int size;
-    int n_elem;
+    int capacity;
+    int n;
 } PQ;
 
 PQ *PQinit(int N);
@@ -36,6 +35,7 @@ int path_size_calculate(int *st, Cli *cliente, Sol *Solucao);
 // Calculate next available departure time from tempo_atual
 int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
 {
+
     // If we can catch the first departure
     if (tempo_atual <= first) {
         return first;
@@ -52,6 +52,7 @@ int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
         next_departure += period;
     }
     
+
     // If we went past last departure, go to next day
     if (next_departure > last) {
         return first + 1440;
@@ -60,163 +61,169 @@ int calcular_proxima_partida(int tempo_atual, int first, int last, int period)
     return next_departure;
 }
 
-void dijkstra(adj *cidades, Cli *cliente, Sol *Solucao, int N, int *first, int *last, int *period,
-              int *time, int *cost)
+
+void print_node(Node n) {
+    //printf("    city_idx: %d\n", n.city_idx);
+    //printf("      weight: %d\n", n.weight);
+    //printf("arrival_time: %d\n", n.arrival_time);
+    //printf("        cost: %d\n", n.cost);
+    //printf("     visited: %d\n", n.visited);
+    //printf("     n_edges: %d\n", n.n_edges);
+    //printf("     lig_idx: %d\n", n.lig_id);
+}
+
+struct wargs {
+    int arrival_time, first, last, period, time;
+    int cost;
+    int dcost;
+};
+
+int get_weight_time(void *wargs) {
+    struct wargs *w = wargs;
+    return w->time+calcular_proxima_partida(w->arrival_time, w->first, w->last, w->period);
+}
+
+int get_weight_cost(void *wargs) {
+    struct wargs *w = wargs;
+    return w->cost+w->dcost;
+}
+
+int sortq(const void *node1, const void *node2) {
+    Node n1 = **(Node**)node1;
+    Node n2 = **(Node**)node2;
+
+    return n1.weight - n2.weight;
+}
+
+int dijkstra(const adj *cidades, Cli client, Sol *Solucao, int N, const int *first, const int *last, const int *periods,
+              const int *times, const int *costs, int (get_weight)(void*), Node **nodes)
 {
-    // Initialize Solucao to safe defaults
-    Solucao->valida = 0;
-    Solucao->caminho_size = 0;
-    Solucao->tempo_total = 0;
-    Solucao->custo_total = 0;
-    Solucao->caminho = NULL;
-    Solucao-> caminho_id = NULL;
+    // TODO: check origin and destination for invalid values
 
-    if (cliente->cidade_origem < 0 || cliente->cidade_destino < 0 || cliente->cidade_origem > N -1 || cliente->cidade_destino > N - 1) {
-        return;
+    int q_capacity = 1;
+    int n = 0;
+
+    for (int i = 0; i < N; i++) {
+        (*nodes)[i].cost = INT_MAX;
+        (*nodes)[i].weight = INT_MAX;
+        (*nodes)[i].arrival_time = INT_MAX;
     }
 
-    // Check if source equals destination
-    if (cliente->cidade_origem == cliente->cidade_destino) {
-        Solucao->valida = 0;
-        Solucao->caminho_size = 0;
-        return;
-    }
-
-    int time_cost = 0;
-    
-    if (cliente->preferencia == 'c') {
-        time_cost = 1;  // Minimize cost
-    }
-    // Otherwise minimize time (time_cost = 0)
-
-    int source = cliente->cidade_origem;
-    int *st = malloc(N * sizeof(int));
-    int *wt = malloc(N * sizeof(int));
-    int *st_lig = malloc(N * sizeof(int));
-
-
-    PQ *pq = PQinit(N);
-
-    // Initialization
-    for (int v = 0; v < N; v++)
-    {
-        st[v] = -1;
-        st_lig[v] = -1;  // Initialize to -1
-        wt[v] = INT_MAX;
-        PQinsert(pq, v, INT_MAX);
+    Node **q = calloc(q_capacity, sizeof(*q));
+    if (!q) {
+        return -1;
     }
     
-    wt[source] = 0;
-    int tempo_chegada = cliente->tempo_inicial;
-    PQdec(pq, source, 0);
-    
-    // Main algorithm
-    while (!PQempty(pq))
-    {
-        int v = PQdelmin(pq);
+    (*nodes)[client.cidade_origem] = (Node){0};
+    (*nodes)[client.cidade_origem].city_idx = client.cidade_origem;
+    (*nodes)[client.cidade_origem].arrival_time = client.tempo_inicial;
+    (*nodes)[client.cidade_origem].n_edges = 0;
 
-        if (v == cliente->cidade_destino)
-        {
+    q[0] = *nodes+client.cidade_origem;
+    n++;
+
+    while(1) {
+        if (n <= 0) {
+            //printf("no mo items.. nigger\n");
             break;
         }
 
-        if (wt[v] != INT_MAX)
-        {   
-            // Iterate through adjacencies of v
-            for (int i = 0; i < cidades[v].num_lig; i++)
-            {
-                int w = cidades[v].next_cidade[i];
-                int dijkstra_id = cidades[v].lig_id[i];
+        //printf("============ Q ==========\n");
+        for (int i = 0; i < n; i++) {
+            //puts("");
+            print_node(*q[i]);
+        }
+        //printf("========== END Q ==========\n");
 
-                if (time_cost == 1)  // Minimize COST
-                {
-                    int custo_lig = cost[dijkstra_id];
-                    
-                    // For cost minimization, we still need to track time for scheduling
-                    int partida = calcular_proxima_partida(tempo_chegada, 
-                                                           first[dijkstra_id], 
-                                                           last[dijkstra_id], 
-                                                           period[dijkstra_id]);
-                    int chegada = partida + time[dijkstra_id];
-                    
-                    if (wt[w] > wt[v] + custo_lig)
-                    {
-                        wt[w] = wt[v] + custo_lig;
-                        tempo_chegada = chegada;
-                        PQdec(pq, w, wt[w]);
-                        st[w] = v;
-                        st_lig[w] = dijkstra_id;
-                    }
-                }
-                else  // Minimize TIME
-                {   
-                    // Calculate next available departure from current city
-                    int partida = calcular_proxima_partida(tempo_chegada, 
-                                                           first[dijkstra_id], 
-                                                           last[dijkstra_id], 
-                                                           period[dijkstra_id]);
-                    
-                    // Calculate arrival time at destination city
-                    int chegada = partida + time[dijkstra_id];
-                    
-                    // The "time" in Dijkstra is the total time elapsed
-                    int tempo_total = chegada - cliente->tempo_inicial;
-                    
-                    if (wt[w] > tempo_total)
-                    {
-                        wt[w] = tempo_total;
-                        tempo_chegada = chegada;
-                        PQdec(pq, w, wt[w]);
-                        st[w] = v;
-                        st_lig[w] = dijkstra_id;
-                    }
-                }
+        /* pop single item */
+        Node *cur = q[0];
+        cur->visited = 1;
+        q[0] = q[n-1];
+        n--;
+
+        //printf("checking city %d.. (%d items left in queue)\n", cur->city_idx, n);
+        //printf("number of cons: %d\n", cidades[cur->city_idx].num_lig);
+
+        if (cur->city_idx == client.cidade_destino) {
+            //printf("got to destination!\n");
+            free(q);
+            return 0;
+        }
+
+        for (int i = 0; i < cidades[cur->city_idx].num_lig; i++) {
+            //printf("con %d..\n", i);
+            int city_idx = cidades[cur->city_idx].next_cidade[i];
+            int lig_idx = cidades[cur->city_idx].lig_id[i];
+            (*nodes)[city_idx].city_idx = city_idx;
+
+
+            if ((*nodes)[city_idx].visited) {
+                //printf("already visited %d\n", city_idx);
+                continue;
             }
+
+            struct wargs wargs = {.arrival_time = cur->arrival_time, .time = times[lig_idx], .cost = cur->cost, .dcost = costs[lig_idx], .first = first[lig_idx], .last = last[lig_idx], .period = periods[lig_idx]};
+
+            int new_weight = get_weight(&wargs);
+
+            if ((*nodes)[city_idx].weight < new_weight) {
+                Node *from = (*nodes)[city_idx].from;
+
+                int from_idx = -1;
+                if (from) from_idx = from->city_idx;
+
+                //printf("city %d has a better con than %d to %d [%d] (%d vs %d)\n",
+                        //city_idx,
+                        //city_idx, cur->city_idx,
+                        //from_idx, 
+                       // (*nodes)[city_idx].weight, new_weight);
+                continue;
+            }
+
+            (*nodes)[city_idx].cost = cur->cost+costs[lig_idx];
+            int prox = calcular_proxima_partida(cur->arrival_time, first[lig_idx], last[lig_idx], periods[lig_idx]);
+            (*nodes)[city_idx].arrival_time = times[lig_idx]+calcular_proxima_partida(cur->arrival_time, first[lig_idx], last[lig_idx], periods[lig_idx]);
+            //printf("==== city %d ====\n", city_idx);
+            //printf("arrived at %d\n", cur->arrival_time);
+            //printf("next departure at %d\n", prox);
+            (*nodes)[city_idx].weight = new_weight;
+            (*nodes)[city_idx].n_edges = cur->n_edges+1;
+            (*nodes)[city_idx].from  = cur;
+            (*nodes)[city_idx].lig_id = lig_idx;
+
+            //puts("");
+
+            if (n >= q_capacity) {
+                q_capacity *= 2;
+                q = realloc(q, q_capacity*sizeof(*q));
+                if (!q) {
+                    perror("realloc()");
+                    return -1;
+                }
+                //printf("reallocated nig\n");
+            }
+            //printf("writing to %d (capacity %d)\n", n, q_capacity);
+            q[n] = *nodes+city_idx;
+            n++;
         }
+
+        qsort(q, n, sizeof(*q), &sortq);
+
     }
 
-    // Reconstruct path
-    int path_length =path_size_calculate(st, cliente, Solucao);
-    Solucao->caminho_size = path_length;
-    Solucao->caminho = (int *)malloc(path_length * sizeof(int));
-    Solucao->caminho_id = (int *)malloc(path_length * sizeof(int));
-    reconstruct_path(st, st_lig, cliente, Solucao);
-
-    // Calculate actual time and cost totals
-    if (Solucao->valida == 1 && Solucao->caminho_size > 0)
-    {
-        int tempo_atual = cliente->tempo_inicial;
-        
-        for (int i = 0; i < Solucao->caminho_size; i++)
-        {   
-            int sol_id = Solucao->caminho_id[i];
-            
-            // Calculate when we can depart on this connection
-            int partida = calcular_proxima_partida(tempo_atual, 
-                                                   first[sol_id], 
-                                                   last[sol_id], 
-                                                   period[sol_id]);
-            
-            // Calculate arrival time
-            int chegada = partida + time[sol_id];
-            
-            // Update current time for next connection
-            tempo_atual = chegada;
-            
-            // Add cost
-            Solucao->custo_total += cost[sol_id];
-        }
-        
-        // Total time is from start to final arrival
-        Solucao->tempo_total = tempo_atual - cliente->tempo_inicial;
+    for (int i = 0; i < N; i++) {
+        //puts("");
+        print_node((*nodes)[i]);
     }
 
-    // Free memory
-    PQfree(pq);
-    free(st);
-    free(wt);
-    free(tempo_chegada);
-    free(st_lig);
+    //printf("\nsolution:\n");
+    for (Node *n = *nodes+client.cidade_destino; n; n = n->from) {
+        //puts("");
+        print_node(*n);
+    }
+
+    free(q);
+    return -1;
 }
 
 void reconstruct_path(int *st, int *st_lig, Cli *cliente, Sol *Solucao){
@@ -303,8 +310,8 @@ PQ *PQinit(int N)
         free(pq);
         exit(0);
     }
-    pq->size = N;
-    pq->n_elem = 0;
+    pq->capacity = N;
+    pq->n = 0;
     return pq;
 }
 
@@ -316,36 +323,36 @@ void PQfree(PQ *pq)
 
 BOOL PQempty(PQ *pq)
 {
-    return pq->n_elem == 0 ? TRUE : FALSE;
+    return pq->n == 0 ? TRUE : FALSE;
 }
 
 void PQinsert(PQ *pq, int vertex, int priority)
 {
-    pq->queue[pq->n_elem].vertex = vertex;
-    pq->queue[pq->n_elem].priority = priority;
-    pq->n_elem++;
+    pq->queue[pq->n].vertex = vertex;
+    pq->queue[pq->n].priority = priority;
+    pq->n++;
 }
 
 int PQdelmin(PQ *pq)
 {
     int i, min_idx = 0;
 
-    for (i = 1; i < pq->n_elem; i++)
+    for (i = 1; i < pq->n; i++)
     {
         if (pq->queue[i].priority < pq->queue[min_idx].priority)
             min_idx = i;
     }
 
     int min_vertex = pq->queue[min_idx].vertex;
-    pq->queue[min_idx] = pq->queue[pq->n_elem - 1];
-    pq->n_elem--;
+    pq->queue[min_idx] = pq->queue[pq->n - 1];
+    pq->n--;
 
     return min_vertex;
 }
 
 void PQdec(PQ *pq, int vertex, int new_priority)
 {
-    for (int i = 0; i < pq->n_elem; i++)
+    for (int i = 0; i < pq->n; i++)
     {
         if (pq->queue[i].vertex == vertex)
         {

@@ -76,23 +76,9 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    Cli *p_clients_file = calloc(1, sizeof(Cli));
-    if (p_clients_file == NULL) {
-        fprintf(stderr, "Erro: falha ao alocar memória para p_clients_file.\n");
-        exit(0);
-    }
-
-    Restricoes *p_rest = calloc(1, sizeof(Restricoes));
-    if (p_rest == NULL) {
-        fprintf(stderr, "Erro: falha ao alocar memória para p_rest.\n");
-        exit(0);
-    }
-
-    Sol *p_sol = malloc(sizeof(Sol));
-    if (p_sol == NULL) {
-        fprintf(stderr, "Erro: falha ao alocar memória para p_sol.\n");
-        exit(0);
-    }
+    Cli        p_clients_file = {0};
+    Restricoes         p_rest = {0};
+    Sol                 p_sol = {0};
 
     read_file_map(file_map, N, L,
                   cidade_part, cidade_cheg, automovel, time, cost, first, last, period, p_cidades);
@@ -111,18 +97,35 @@ int main(int argc, char *argv[])
     for (int i = 1; i <= total_clients; i++)
     {  
 
-        memset(p_rest, 0, sizeof(Restricoes));     
-       
-        read_file_clients(file_clients, p_clients_file, p_rest);
+        p_rest = (Restricoes) {0};
+        read_file_clients(file_clients, &p_clients_file, &p_rest);
 
-        
-        dijkstra(p_cidades, p_clients_file, p_sol, N, first, last, period, time, cost);
+        int err = 0;
+        Node *nodes = NULL;
+
+        if (p_clients_file.cidade_origem >= 0 && p_clients_file.cidade_destino >= 0 && p_clients_file.cidade_origem < N && p_clients_file.cidade_destino < N) {
+
+            nodes = calloc(N, sizeof(*nodes));
+            if (!nodes) {
+                // TODO: free everything
+                return -1;
+            }
+
+            if (p_clients_file.preferencia == 'c')
+                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, &get_weight_cost, &nodes);
+
+            else if (p_clients_file.preferencia == 't')
+                err = dijkstra(p_cidades, p_clients_file, &p_sol, N, first, last, period, time, cost, &get_weight_time, &nodes);
+
+        } else err = 1;
+
+        printf("dijkstra returned %d\n", err);
 
         /*
-        printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
-             p_clients_file->id, p_clients_file->cidade_origem, p_clients_file->cidade_destino, p_clients_file->tempo_inicial, p_clients_file->preferencia, p_clients_file->num_restricoes);
+           printf("Client: %d, Cidade1: %d, Cidade2: %d, Tempo Inicial: %d, String_torc: %c, Num_restrictions: %d\n\n",
+           p_clients_file->id, p_clients_file->cidade_origem, p_clients_file->cidade_destino, p_clients_file->tempo_inicial, p_clients_file->preferencia, p_clients_file->num_restricoes);
 
-            printf("Restricoes:\n"
+           printf("Restricoes:\n"
            "  meio_proibido = %d\n"
            "  max_tempo_ligacao = %d\n"
            "  max_custo_ligacao = %d\n"
@@ -133,9 +136,36 @@ int main(int argc, char *argv[])
            p_rest->max_tempo_total, p_rest->max_custo_total);*/
 
 
-       print_results(ptr_results_file, p_sol, automovel, p_clients_file);
+        Node *solution = NULL;
+        int n_nodes = 0;
+        if (!err) {
+            n_nodes = nodes[p_clients_file.cidade_destino].n_edges+1;
+            printf("getting solution.. (%d nodes)\n", n_nodes);
+            solution = malloc(n_nodes*sizeof(*solution));
+            if (!solution) {
+                // TODO: free
+                perror("malloc()");
+                return -1;
+            }
 
-        
+            Node *cur = nodes+p_clients_file.cidade_destino;
+            for (int i = n_nodes-1; i >= 0; i--) {
+                solution[i] = *cur;
+                cur = cur->from;
+            }
+
+            for (int i = 0; i < n_nodes; i++) {
+                print_node(solution[i]);
+            }
+        }
+
+        print_results(ptr_results_file, solution, n_nodes, automovel, p_clients_file);
+
+        free(solution);
+        free(nodes);
+        free(p_sol.caminho_id);
+        free(p_sol.caminho);
+
     }
 
     fclose(file_clients);
@@ -143,9 +173,6 @@ int main(int argc, char *argv[])
     // close results file
    fclose(ptr_results_file);
 
-    free(p_sol);
-    free(p_clients_file);
-    free(p_rest);
     free(results_filename);
     
 
